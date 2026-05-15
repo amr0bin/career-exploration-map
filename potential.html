@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Education Pathway — Playing It Out</title>
+<link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#faf8f3;
+  --bg2:#f4f0e8;
+  --bg3:#ede8dc;
+  --text:#2d2820;
+  --muted:#8a8070;
+  --subtle:#ddd8cc;
+  --sans:'Asap',system-ui,sans-serif;
+  --now:#d4724a;
+  --msc:#7a4a9a;
+  --ma:#3a7ab8;
+  --phd:#5a8a3a;
+  --beyond:#c8822a;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
+header{padding:1.6rem 2rem 0.9rem;border-bottom:1px solid var(--subtle);background:var(--bg)}
+header h1{font-size:1.15rem;font-weight:500;letter-spacing:-0.01em;color:var(--text)}
+header p{font-size:11.5px;color:var(--muted);font-weight:300;margin-top:3px}
+
+.canvas-wrap{width:100%;overflow-x:auto;padding:1.5rem 1rem 3rem;background:var(--bg)}
+
+svg#map{display:block;margin:0 auto}
+
+/* Node interactivity */
+.phase-group{cursor:pointer}
+.phase-group:hover .phase-leaf{opacity:0.88;transform-origin:center;transform:scale(1.03)}
+.phase-leaf{transition:opacity .2s,transform .2s}
+.role-leaf{cursor:pointer;transition:opacity .18s}
+.role-leaf:hover{opacity:0.82}
+
+/* Tooltip */
+#tooltip{position:fixed;background:#fffdf8;border:1px solid var(--subtle);border-radius:10px;padding:13px 15px;max-width:300px;z-index:1000;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 3px 18px rgba(0,0,0,.09)}
+#tooltip.vis{opacity:1}
+.tt-phase{font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:500;margin-bottom:3px}
+.tt-title{font-size:13.5px;font-weight:500;color:var(--text);margin-bottom:5px;line-height:1.3}
+.tt-body{font-size:11.5px;color:#6a6258;line-height:1.58;font-weight:300}
+
+/* Sidebar */
+#sidebar{position:fixed;right:0;top:0;height:100vh;width:320px;background:#fffdf8;border-left:1px solid var(--subtle);padding:1.8rem 1.5rem;transform:translateX(100%);transition:transform .28s ease;z-index:200;overflow-y:auto;box-shadow:-3px 0 18px rgba(0,0,0,.06)}
+#sidebar.open{transform:translateX(0)}
+#sbc{position:absolute;top:.9rem;right:.9rem;background:none;border:none;color:var(--muted);font-size:17px;cursor:pointer;padding:3px 5px;border-radius:4px;font-family:var(--sans)}
+#sbc:hover{background:var(--bg2)}
+.sb-phase{font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:500;margin-bottom:5px}
+.sb-title{font-size:1.15rem;font-weight:500;line-height:1.2;margin-bottom:10px;color:var(--text)}
+.sb-timing{font-size:11px;color:var(--muted);margin-bottom:12px;font-weight:300;font-style:italic}
+.sb-desc{font-size:12.5px;color:#5a5248;line-height:1.68;margin-bottom:14px;font-weight:300}
+.sb-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:5px;font-weight:500;margin-top:12px}
+.sb-list{list-style:none}
+.sb-list li{font-size:12px;color:#5a5248;line-height:1.6;padding:4px 0;border-bottom:1px solid var(--subtle);font-weight:300}
+.sb-list li:last-child{border-bottom:none}
+.sb-list li::before{content:'→ ';color:var(--muted)}
+.sb-note{font-size:11px;background:var(--bg2);border-radius:5px;padding:9px 11px;color:#5a5248;font-weight:300;line-height:1.65;border-left:3px solid;margin-top:4px}
+
+footer{text-align:center;padding:1.2rem;font-size:10.5px;color:var(--muted);font-weight:300;border-top:1px solid var(--subtle);background:var(--bg2)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>My education pathway — playing it out</h1>
+  <p>MSc Disability Studies (Leeds) → MA Counselling / Clinical Psych → PhD · Click any phase or role to explore what it opens up</p>
+</header>
+
+<div class="canvas-wrap">
+<svg id="map" viewBox="0 0 1180 980" width="1180" height="980" xmlns="http://www.w3.org/2000/svg">
+
+<defs>
+  <filter id="sf" x="-15%" y="-15%" width="130%" height="130%">
+    <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.07)"/>
+  </filter>
+  <filter id="sf2" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="2" stdDeviation="3.5" flood-color="rgba(0,0,0,0.09)"/>
+  </filter>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+    <path d="M2 2L8 5L2 8" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- ═══════════════════════════════════════════
+     TIMELINE SPINE
+════════════════════════════════════════════ -->
+<line x1="100" y1="200" x2="1100" y2="200" stroke="#ddd8cc" stroke-width="1.5" stroke-dasharray="4 6"/>
+
+<!-- Year markers -->
+<text x="100" y="228" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#aaa098" letter-spacing="0.06em">NOW</text>
+<text x="290" y="228" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#aaa098" letter-spacing="0.06em">YR 1–2</text>
+<text x="510" y="228" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#aaa098" letter-spacing="0.06em">YR 3–4</text>
+<text x="730" y="228" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#aaa098" letter-spacing="0.06em">YR 5–8</text>
+<text x="980" y="228" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#aaa098" letter-spacing="0.06em">YR 9+</text>
+
+<!-- Vertical tick marks -->
+<line x1="100" y1="194" x2="100" y2="208" stroke="#ccc8c0" stroke-width="1"/>
+<line x1="290" y1="194" x2="290" y2="208" stroke="#ccc8c0" stroke-width="1"/>
+<line x1="510" y1="194" x2="510" y2="208" stroke="#ccc8c0" stroke-width="1"/>
+<line x1="730" y1="194" x2="730" y2="208" stroke="#ccc8c0" stroke-width="1"/>
+<line x1="980" y1="194" x2="980" y2="208" stroke="#ccc8c0" stroke-width="1"/>
+
+<!-- ═══════════════════════════════════════════
+     PHASE 0 — NOW (existing foundation)
+════════════════════════════════════════════ -->
+
+<!-- Main phase leaf -->
+<g class="phase-group" id="p0" data-phase="0">
+  <ellipse cx="100" cy="140" rx="54" ry="38" fill="#fde8d0" stroke="#d4724a" stroke-width="1" filter="url(#sf2)"/>
+  <text x="100" y="133" text-anchor="middle" font-family="Asap,sans-serif" font-size="10" font-weight="500" fill="#7a3a18">existing</text>
+  <text x="100" y="147" text-anchor="middle" font-family="Asap,sans-serif" font-size="10" font-weight="500" fill="#7a3a18">foundation</text>
+  <text x="100" y="161" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" font-weight="300" fill="#a06040" font-style="italic">25+ yrs</text>
+</g>
+
+<!-- Role leaves radiating downward from NOW -->
+<!-- Learning Designer -->
+<g class="role-leaf" data-role="r0a">
+  <path d="M100,248 C118,242 128,260 120,278 C112,292 88,292 80,278 C72,264 82,248 100,248Z" fill="#fde8d0" stroke="#d4724a" stroke-width="0.8" opacity="0.85"/>
+  <text x="100" y="266" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" fill="#7a3a18">Learning</text>
+  <text x="100" y="277" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" fill="#7a3a18">Designer</text>
+</g>
+<!-- Accessibility Designer -->
+<g class="role-leaf" data-role="r0b">
+  <path d="M55,248 C73,240 85,256 80,274 C75,288 52,292 44,278 C36,264 42,250 55,248Z" fill="#fde8d0" stroke="#d4724a" stroke-width="0.8" opacity="0.7" transform="rotate(-18,65,270)"/>
+  <text x="56" y="278" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#7a3a18">Access.</text>
+  <text x="56" y="289" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#7a3a18">Designer</text>
+</g>
+<!-- Art Studio -->
+<g class="role-leaf" data-role="r0c">
+  <path d="M145,248 C163,240 175,256 170,274 C165,288 142,292 134,278 C126,264 132,250 145,248Z" fill="#fde8d0" stroke="#d4724a" stroke-width="0.8" opacity="0.7" transform="rotate(18,155,270)"/>
+  <text x="156" y="278" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#7a3a18">Art</text>
+  <text x="156" y="289" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#7a3a18">Studio</text>
+</g>
+
+<!-- Arrow to MSc -->
+<line x1="160" y1="140" x2="218" y2="140" stroke="#7a4a9a" stroke-width="1.2" stroke-dasharray="5 4" marker-end="url(#arr)" opacity="0.6"/>
+
+<!-- ═══════════════════════════════════════════
+     PHASE 1 — MSc Disability Studies, Leeds
+════════════════════════════════════════════ -->
+
+<g class="phase-group" id="p1" data-phase="1">
+  <!-- Main leaf — wide lobe -->
+  <path d="M290,100 C340,95 368,118 360,150 C352,180 320,198 290,196 C260,198 228,180 220,150 C212,118 240,95 290,100Z" fill="#e8d5f0" stroke="#7a4a9a" stroke-width="1.2" filter="url(#sf2)" class="phase-leaf"/>
+  <text x="290" y="130" text-anchor="middle" font-family="Asap,sans-serif" font-size="11" font-weight="500" fill="#3a1a58">MSc</text>
+  <text x="290" y="146" text-anchor="middle" font-family="Asap,sans-serif" font-size="10" font-weight="400" fill="#3a1a58">Disability Studies</text>
+  <text x="290" y="160" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" font-weight="300" fill="#6a3a90" font-style="italic">Univ. of Leeds</text>
+  <text x="290" y="176" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" font-weight="300" fill="#8a5ab0">~2 years</text>
+</g>
+
+<!-- What the MSc unlocks — role leaves below -->
+<text x="290" y="248" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" fill="#9a90a0" letter-spacing="0.05em">UNLOCKS</text>
+
+<g class="role-leaf" data-role="r1a">
+  <path d="M180,278 C200,268 218,280 218,300 C218,318 202,330 182,328 C162,326 150,312 152,294 C154,276 168,274 180,278Z" fill="#e8d5f0" stroke="#7a4a9a" stroke-width="0.8"/>
+  <text x="183" y="300" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#3a1a58">Disability</text>
+  <text x="183" y="312" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#3a1a58">Policy Adv.</text>
+</g>
+
+<g class="role-leaf" data-role="r1b">
+  <path d="M268,268 C288,260 306,272 306,292 C306,310 290,322 270,320 C250,318 238,304 240,286 C242,268 256,264 268,268Z" fill="#e8d5f0" stroke="#7a4a9a" stroke-width="0.8"/>
+  <text x="272" y="290" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#3a1a58">Research</text>
+  <text x="272" y="302" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#3a1a58">Assistant</text>
+</g>
+
+<g class="role-leaf" data-role="r1c">
+  <path d="M350,268 C370,260 388,272 388,292 C388,310 372,322 352,320 C332,318 320,304 322,286 C324,268 338,264 350,268Z" fill="#e8d5f0" stroke="#7a4a9a" stroke-width="0.8"/>
+  <text x="354" y="290" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#3a1a58">Access.</text>
+  <text x="354" y="302" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#3a1a58">Consultant</text>
+</g>
+
+<g class="role-leaf" data-role="r1d">
+  <path d="M428,278 C448,268 466,280 466,300 C466,318 450,330 430,328 C410,326 398,312 400,294 C402,276 416,274 428,278Z" fill="#e8d5f0" stroke="#7a4a9a" stroke-width="0.8"/>
+  <text x="432" y="300" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#3a1a58">Disability</text>
+  <text x="432" y="312" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#3a1a58">Rights Adv.</text>
+</g>
+
+<!-- Connector lines from phase to roles -->
+<line x1="244" y1="196" x2="183" y2="268" stroke="#7a4a9a" stroke-width="0.5" opacity="0.3"/>
+<line x1="272" y1="196" x2="272" y2="260" stroke="#7a4a9a" stroke-width="0.5" opacity="0.3"/>
+<line x1="308" y1="196" x2="354" y2="260" stroke="#7a4a9a" stroke-width="0.5" opacity="0.3"/>
+<line x1="336" y1="196" x2="432" y2="270" stroke="#7a4a9a" stroke-width="0.5" opacity="0.3"/>
+
+<!-- Arrow to MA -->
+<line x1="368" y1="148" x2="438" y2="148" stroke="#3a7ab8" stroke-width="1.2" stroke-dasharray="5 4" marker-end="url(#arr)" opacity="0.6"/>
+
+<!-- ═══════════════════════════════════════════
+     PHASE 2 — MA Counselling / Clinical Psych
+════════════════════════════════════════════ -->
+
+<g class="phase-group" id="p2" data-phase="2">
+  <path d="M510,95 C568,88 600,115 596,152 C592,186 562,205 510,205 C458,205 428,186 424,152 C420,115 452,88 510,95Z" fill="#d6eaf8" stroke="#3a7ab8" stroke-width="1.2" filter="url(#sf2)" class="phase-leaf"/>
+  <text x="510" y="128" text-anchor="middle" font-family="Asap,sans-serif" font-size="11" font-weight="500" fill="#143060">MA</text>
+  <text x="510" y="144" text-anchor="middle" font-family="Asap,sans-serif" font-size="10" font-weight="400" fill="#143060">Counselling or</text>
+  <text x="510" y="158" text-anchor="middle" font-family="Asap,sans-serif" font-size="10" font-weight="400" fill="#143060">Clinical Psych</text>
+  <text x="510" y="174" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" font-weight="300" fill="#2a5090" font-style="italic">UBC · SFU · TRU</text>
+  <text x="510" y="188" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" font-weight="300" fill="#4a70b0">~2–3 years</text>
+</g>
+
+<text x="510" y="248" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" fill="#9a90a0" letter-spacing="0.05em">UNLOCKS</text>
+
+<g class="role-leaf" data-role="r2a">
+  <path d="M390,268 C412,258 432,270 432,292 C432,312 414,326 392,322 C370,318 356,302 360,282 C364,264 378,264 390,268Z" fill="#d6eaf8" stroke="#3a7ab8" stroke-width="0.8"/>
+  <text x="394" y="290" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#143060">Reg. Clinical</text>
+  <text x="394" y="302" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#143060">Counsellor</text>
+</g>
+
+<g class="role-leaf" data-role="r2b">
+  <path d="M472,262 C494,252 514,264 514,286 C514,306 496,320 474,316 C452,312 438,296 442,276 C446,258 460,258 472,262Z" fill="#d6eaf8" stroke="#3a7ab8" stroke-width="0.8"/>
+  <text x="476" y="284" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#143060">Disability-</text>
+  <text x="476" y="296" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#143060">affirm. Therapy</text>
+</g>
+
+<g class="role-leaf" data-role="r2c">
+  <path d="M552,262 C574,252 594,264 594,286 C594,306 576,320 554,316 C532,312 518,296 522,276 C526,258 540,258 552,262Z" fill="#d6eaf8" stroke="#3a7ab8" stroke-width="0.8"/>
+  <text x="556" y="284" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#143060">Palliative</text>
+  <text x="556" y="296" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#143060">Care Couns.</text>
+</g>
+
+<g class="role-leaf" data-role="r2d">
+  <path d="M632,268 C654,258 674,270 674,292 C674,312 656,326 634,322 C612,318 598,302 602,282 C606,264 620,264 632,268Z" fill="#d6eaf8" stroke="#3a7ab8" stroke-width="0.8"/>
+  <text x="636" y="290" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#143060">Arts-based</text>
+  <text x="636" y="302" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#143060">Therapist</text>
+</g>
+
+<line x1="462" y1="204" x2="394" y2="258" stroke="#3a7ab8" stroke-width="0.5" opacity="0.3"/>
+<line x1="492" y1="205" x2="476" y2="252" stroke="#3a7ab8" stroke-width="0.5" opacity="0.3"/>
+<line x1="528" y1="205" x2="556" y2="252" stroke="#3a7ab8" stroke-width="0.5" opacity="0.3"/>
+<line x1="558" y1="204" x2="636" y2="258" stroke="#3a7ab8" stroke-width="0.5" opacity="0.3"/>
+
+<!-- Arrow to PhD -->
+<line x1="596" y1="150" x2="668" y2="150" stroke="#5a8a3a" stroke-width="1.2" stroke-dasharray="5 4" marker-end="url(#arr)" opacity="0.6"/>
+
+<!-- ═══════════════════════════════════════════
+     PHASE 3 — PhD
+════════════════════════════════════════════ -->
+
+<g class="phase-group" id="p3" data-phase="3">
+  <path d="M730,88 C798,80 838,112 834,156 C830,196 796,218 730,218 C664,218 630,196 626,156 C622,112 662,80 730,88Z" fill="#dff0c8" stroke="#5a8a3a" stroke-width="1.2" filter="url(#sf2)" class="phase-leaf"/>
+  <text x="730" y="118" text-anchor="middle" font-family="Asap,sans-serif" font-size="11" font-weight="500" fill="#1a4010">PhD</text>
+  <text x="730" y="134" text-anchor="middle" font-family="Asap,sans-serif" font-size="10" font-weight="400" fill="#1a4010">Clinical Psych,</text>
+  <text x="730" y="148" text-anchor="middle" font-family="Asap,sans-serif" font-size="10" font-weight="400" fill="#1a4010">Health Sciences,</text>
+  <text x="730" y="162" text-anchor="middle" font-family="Asap,sans-serif" font-size="10" font-weight="400" fill="#1a4010">or Public Health</text>
+  <text x="730" y="178" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" font-weight="300" fill="#2a6018" font-style="italic">UBC · Dalhousie · Leeds</text>
+  <text x="730" y="194" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" font-weight="300" fill="#4a8030">~4–5 years</text>
+</g>
+
+<text x="730" y="256" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" fill="#9a90a0" letter-spacing="0.05em">UNLOCKS</text>
+
+<g class="role-leaf" data-role="r3a">
+  <path d="M576,278 C598,266 620,278 620,302 C620,324 600,338 578,334 C556,330 540,312 546,290 C552,270 566,268 576,278Z" fill="#dff0c8" stroke="#5a8a3a" stroke-width="0.8"/>
+  <text x="580" y="300" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#1a4010">Researcher</text>
+  <text x="580" y="312" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#1a4010">& Lecturer</text>
+</g>
+
+<g class="role-leaf" data-role="r3b">
+  <path d="M650,268 C672,256 696,268 696,292 C696,314 676,330 652,326 C628,322 614,304 620,282 C626,262 640,260 650,268Z" fill="#dff0c8" stroke="#5a8a3a" stroke-width="0.8"/>
+  <text x="654" y="290" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#1a4010">Clinical</text>
+  <text x="654" y="302" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#1a4010">Psychologist</text>
+</g>
+
+<g class="role-leaf" data-role="r3c">
+  <path d="M730,266 C752,254 776,266 776,290 C776,312 756,328 732,324 C708,320 694,302 700,280 C706,260 720,258 730,266Z" fill="#dff0c8" stroke="#5a8a3a" stroke-width="0.8"/>
+  <text x="736" y="288" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#1a4010">Health</text>
+  <text x="736" y="300" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#1a4010">Researcher</text>
+</g>
+
+<g class="role-leaf" data-role="r3d">
+  <path d="M810,268 C832,256 856,268 856,292 C856,314 836,330 812,326 C788,322 774,304 780,282 C786,262 800,260 810,268Z" fill="#dff0c8" stroke="#5a8a3a" stroke-width="0.8"/>
+  <text x="816" y="290" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#1a4010">Neuroethics</text>
+  <text x="816" y="302" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#1a4010">Researcher</text>
+</g>
+
+<g class="role-leaf" data-role="r3e">
+  <path d="M886,278 C908,266 930,278 930,302 C930,324 910,338 888,334 C866,330 850,312 856,290 C862,270 876,268 886,278Z" fill="#dff0c8" stroke="#5a8a3a" stroke-width="0.8"/>
+  <text x="890" y="300" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#1a4010">Public Health</text>
+  <text x="890" y="312" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#1a4010">Advisor</text>
+</g>
+
+<line x1="668" y1="218" x2="580" y2="268" stroke="#5a8a3a" stroke-width="0.5" opacity="0.3"/>
+<line x1="696" y1="220" x2="654" y2="258" stroke="#5a8a3a" stroke-width="0.5" opacity="0.3"/>
+<line x1="730" y1="218" x2="736" y2="258" stroke="#5a8a3a" stroke-width="0.5" opacity="0.3"/>
+<line x1="764" y1="220" x2="816" y2="258" stroke="#5a8a3a" stroke-width="0.5" opacity="0.3"/>
+<line x1="792" y1="218" x2="890" y2="268" stroke="#5a8a3a" stroke-width="0.5" opacity="0.3"/>
+
+<!-- Arrow to Beyond -->
+<line x1="834" y1="152" x2="900" y2="152" stroke="#c8822a" stroke-width="1.2" stroke-dasharray="5 4" marker-end="url(#arr)" opacity="0.6"/>
+
+<!-- ═══════════════════════════════════════════
+     PHASE 4 — BEYOND (fully integrated)
+════════════════════════════════════════════ -->
+
+<g class="phase-group" id="p4" data-phase="4">
+  <path d="M980,80 C1060,70 1110,108 1106,160 C1102,208 1060,234 980,234 C900,234 858,208 854,160 C850,108 900,70 980,80Z" fill="#fde8c0" stroke="#c8822a" stroke-width="1.2" filter="url(#sf2)" class="phase-leaf"/>
+  <text x="980" y="112" text-anchor="middle" font-family="Asap,sans-serif" font-size="11" font-weight="500" fill="#5a3408">fully</text>
+  <text x="980" y="128" text-anchor="middle" font-family="Asap,sans-serif" font-size="11" font-weight="500" fill="#5a3408">integrated</text>
+  <text x="980" y="148" text-anchor="middle" font-family="Asap,sans-serif" font-size="9.5" font-weight="300" fill="#7a5020">scholar · practitioner</text>
+  <text x="980" y="163" text-anchor="middle" font-family="Asap,sans-serif" font-size="9.5" font-weight="300" fill="#7a5020">artist · advocate</text>
+  <text x="980" y="180" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" font-weight="300" fill="#9a7040" font-style="italic">all threads woven</text>
+  <text x="980" y="196" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" font-weight="300" fill="#b08050">yr 9 onward</text>
+</g>
+
+<text x="980" y="272" text-anchor="middle" font-family="Asap,sans-serif" font-size="8.5" fill="#9a90a0" letter-spacing="0.05em">POSSIBLE ROLES</text>
+
+<g class="role-leaf" data-role="r4a">
+  <path d="M840,292 C864,278 890,290 890,316 C890,340 868,356 844,350 C820,344 804,324 812,300 C820,278 836,278 840,292Z" fill="#fde8c0" stroke="#c8822a" stroke-width="0.8"/>
+  <text x="846" y="314" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#5a3408">CAO /</text>
+  <text x="846" y="326" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#5a3408">Dir. Access.</text>
+</g>
+
+<g class="role-leaf" data-role="r4b">
+  <path d="M920,282 C944,268 972,280 972,306 C972,330 950,346 926,340 C902,334 886,314 894,290 C902,268 918,268 920,282Z" fill="#fde8c0" stroke="#c8822a" stroke-width="0.8"/>
+  <text x="926" y="306" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#5a3408">Disability</text>
+  <text x="926" y="318" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#5a3408">Psychologist</text>
+</g>
+
+<g class="role-leaf" data-role="r4c">
+  <path d="M1004,280 C1028,266 1056,278 1056,304 C1056,328 1034,344 1010,338 C986,332 970,312 978,288 C986,266 1002,266 1004,280Z" fill="#fde8c0" stroke="#c8822a" stroke-width="0.8"/>
+  <text x="1010" y="304" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#5a3408">Professor &amp;</text>
+  <text x="1010" y="316" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#5a3408">Researcher</text>
+</g>
+
+<g class="role-leaf" data-role="r4d">
+  <path d="M1086,288 C1110,274 1138,286 1138,312 C1138,336 1116,352 1092,346 C1068,340 1052,320 1060,296 C1068,274 1084,274 1086,288Z" fill="#fde8c0" stroke="#c8822a" stroke-width="0.8"/>
+  <text x="1092" y="312" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#5a3408">Author &amp;</text>
+  <text x="1092" y="324" text-anchor="middle" font-family="Asap,sans-serif" font-size="8" fill="#5a3408">Public Voice</text>
+</g>
+
+<line x1="922" y1="234" x2="846" y2="280" stroke="#c8822a" stroke-width="0.5" opacity="0.3"/>
+<line x1="956" y1="234" x2="926" y2="270" stroke="#c8822a" stroke-width="0.5" opacity="0.3"/>
+<line x1="1004" y1="234" x2="1010" y2="268" stroke="#c8822a" stroke-width="0.5" opacity="0.3"/>
+<line x1="1038" y1="234" x2="1092" y2="276" stroke="#c8822a" stroke-width="0.5" opacity="0.3"/>
+
+<!-- ═══════════════════════════════════════════
+     WHAT EACH DEGREE ADDS — annotation band
+════════════════════════════════════════════ -->
+
+<rect x="60" y="380" width="1100" height="1" fill="#e8e0d4"/>
+<text x="60" y="400" font-family="Asap,sans-serif" font-size="9" fill="#aaa098" letter-spacing="0.06em">WHAT EACH PHASE ADDS TO THE EXISTING FOUNDATION</text>
+
+<!-- Phase annotation cards -->
+<!-- NOW -->
+<rect x="30" y="416" width="160" height="110" rx="8" fill="#fdf8f2" stroke="#e8d8c8" stroke-width="0.8"/>
+<text x="110" y="436" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" font-weight="500" fill="#d4724a" letter-spacing="0.05em">NOW</text>
+<text x="48" y="454" font-family="Asap,sans-serif" font-size="8.5" fill="#6a6258">· 25+ yrs learning design</text>
+<text x="48" y="468" font-family="Asap,sans-serif" font-size="8.5" fill="#6a6258">· Accessibility practitioner</text>
+<text x="48" y="482" font-family="Asap,sans-serif" font-size="8.5" fill="#6a6258">· Care work across settings</text>
+<text x="48" y="496" font-family="Asap,sans-serif" font-size="8.5" fill="#6a6258">· Studio practice (24 yrs)</text>
+<text x="48" y="510" font-family="Asap,sans-serif" font-size="8.5" fill="#6a6258">· BSc Neuroscience</text>
+
+<!-- MSc -->
+<rect x="210" y="416" width="192" height="164" rx="8" fill="#f8f2fc" stroke="#d8c0e8" stroke-width="0.8"/>
+<text x="306" y="436" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" font-weight="500" fill="#7a4a9a" letter-spacing="0.05em">MSc DISABILITY STUDIES</text>
+<text x="226" y="454" font-family="Asap,sans-serif" font-size="8.5" fill="#5a4268">· Political &amp; social theory of disability</text>
+<text x="226" y="468" font-family="Asap,sans-serif" font-size="8.5" fill="#5a4268">· Crip theory, disability justice</text>
+<text x="226" y="482" font-family="Asap,sans-serif" font-size="8.5" fill="#5a4268">· Research methodology</text>
+<text x="226" y="496" font-family="Asap,sans-serif" font-size="8.5" fill="#5a4268">· Leeds: world-leading program</text>
+<text x="226" y="510" font-family="Asap,sans-serif" font-size="8.5" fill="#5a4268">· Shifts practice → scholarship</text>
+<text x="226" y="524" font-family="Asap,sans-serif" font-size="8.5" fill="#5a4268">· Policy credibility unlocked</text>
+<text x="226" y="538" font-family="Asap,sans-serif" font-size="8.5" fill="#5a4268">· International network (UK)</text>
+<text x="226" y="552" font-family="Asap,sans-serif" font-size="8.5" fill="#5a4268">· Can be done online / part-time</text>
+
+<!-- MA -->
+<rect x="420" y="416" width="192" height="164" rx="8" fill="#eef6fe" stroke="#b8d4f0" stroke-width="0.8"/>
+<text x="516" y="436" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" font-weight="500" fill="#3a7ab8" letter-spacing="0.05em">MA COUNSELLING / CLIN PSYCH</text>
+<text x="436" y="454" font-family="Asap,sans-serif" font-size="8.5" fill="#2a4a78">· Clinical credential (RCC or RPsych)</text>
+<text x="436" y="468" font-family="Asap,sans-serif" font-size="8.5" fill="#2a4a78">· Supervised practicum hours</text>
+<text x="436" y="482" font-family="Asap,sans-serif" font-size="8.5" fill="#2a4a78">· Therapeutic modalities training</text>
+<text x="436" y="496" font-family="Asap,sans-serif" font-size="8.5" fill="#2a4a78">· Dream path — counselling</text>
+<text x="436" y="510" font-family="Asap,sans-serif" font-size="8.5" fill="#2a4a78">· Disability Studies MSc makes</text>
+<text x="436" y="522" font-family="Asap,sans-serif" font-size="8.5" fill="#2a4a78">  this a rare specialisation</text>
+<text x="436" y="536" font-family="Asap,sans-serif" font-size="8.5" fill="#2a4a78">· Arts-based therapy possible</text>
+<text x="436" y="550" font-family="Asap,sans-serif" font-size="8.5" fill="#2a4a78">· Palliative / disability focus</text>
+
+<!-- PhD -->
+<rect x="630" y="416" width="200" height="178" rx="8" fill="#f0f8e8" stroke="#b8d898" stroke-width="0.8"/>
+<text x="730" y="436" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" font-weight="500" fill="#2a6018" letter-spacing="0.05em">PhD</text>
+<text x="646" y="454" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">· Original research contribution</text>
+<text x="646" y="468" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">· Academic faculty pathway</text>
+<text x="646" y="482" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">· Scholar-practitioner model</text>
+<text x="646" y="496" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">  finally accessible</text>
+<text x="646" y="510" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">· Clinical Psych: full Reg. Psych</text>
+<text x="646" y="524" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">· Health Sci: public health lens</text>
+<text x="646" y="538" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">· Neuroethics research possible</text>
+<text x="646" y="552" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">· International impact scope</text>
+<text x="646" y="566" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">· Can be done later in career</text>
+<text x="646" y="580" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">  — life experience is an asset</text>
+
+<!-- Beyond -->
+<rect x="848" y="416" width="296" height="178" rx="8" fill="#fdf4e4" stroke="#e0c898" stroke-width="0.8"/>
+<text x="996" y="436" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" font-weight="500" fill="#5a3408" letter-spacing="0.05em">FULLY INTEGRATED — YR 9+</text>
+<text x="864" y="454" font-family="Asap,sans-serif" font-size="8.5" fill="#5a3408">· One of very few people who holds:</text>
+<text x="876" y="468" font-family="Asap,sans-serif" font-size="8.5" fill="#7a5428">  disability theory + clinical credential</text>
+<text x="876" y="482" font-family="Asap,sans-serif" font-size="8.5" fill="#7a5428">  + PhD research + 25 yrs practice</text>
+<text x="876" y="496" font-family="Asap,sans-serif" font-size="8.5" fill="#7a5428">  + neuroscience + arts practice</text>
+<text x="864" y="514" font-family="Asap,sans-serif" font-size="8.5" fill="#5a3408">· Rare enough to define your own role</text>
+<text x="864" y="528" font-family="Asap,sans-serif" font-size="8.5" fill="#5a3408">· Books, policy, teaching, therapy —</text>
+<text x="864" y="542" font-family="Asap,sans-serif" font-size="8.5" fill="#5a3408">  all viable simultaneously</text>
+<text x="864" y="556" font-family="Asap,sans-serif" font-size="8.5" fill="#5a3408">· Leeds MSc + Canadian PhD =</text>
+<text x="864" y="570" font-family="Asap,sans-serif" font-size="8.5" fill="#5a3408">  international network and reach</text>
+<text x="864" y="584" font-family="Asap,sans-serif" font-size="8.5" fill="#5a3408">· The work speaks — not the resume</text>
+
+<!-- ═══════════════════════════════════════════
+     A KEY QUESTION TO SIT WITH
+════════════════════════════════════════════ -->
+<rect x="30" y="618" width="1120" height="80" rx="10" fill="#fdf8f0" stroke="#e0d4c0" stroke-width="0.8"/>
+<text x="590" y="642" text-anchor="middle" font-family="Asap,sans-serif" font-size="9.5" font-weight="500" fill="#8a7060" letter-spacing="0.04em">A QUESTION TO SIT WITH</text>
+<text x="590" y="662" text-anchor="middle" font-family="Asap,sans-serif" font-size="11" font-weight="300" fill="#4a3828" font-style="italic">Does the MSc come before the MA, or could the MA come first — building clinical hours while the theoretical depth of Leeds deepens alongside?</text>
+<text x="590" y="682" text-anchor="middle" font-family="Asap,sans-serif" font-size="10" font-weight="300" fill="#7a6858" font-style="italic">The sequence matters less than the intention. Either order leads to the same integrated destination.</text>
+
+<!-- ═══════════════════════════════════════════
+     THREAD CONTINUITY — what never stops
+════════════════════════════════════════════ -->
+<text x="60" y="730" font-family="Asap,sans-serif" font-size="9" fill="#aaa098" letter-spacing="0.06em">WHAT CONTINUES THROUGHOUT — REGARDLESS OF DEGREE</text>
+<rect x="30" y="744" width="1120" height="1" fill="#e8e0d4"/>
+
+<g transform="translate(30, 760)">
+  <!-- Continuous threads as small leaf pills -->
+  <rect x="0" y="8" width="126" height="28" rx="14" fill="#fde8d0" stroke="#d4724a" stroke-width="0.7"/>
+  <text x="63" y="27" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#7a3a18">Andrea Robin Studio</text>
+
+  <rect x="136" y="8" width="126" height="28" rx="14" fill="#fde8d0" stroke="#d4724a" stroke-width="0.7"/>
+  <text x="199" y="27" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#7a3a18">Integrated Learning Labs</text>
+
+  <rect x="272" y="8" width="116" height="28" rx="14" fill="#fde8d0" stroke="#d4724a" stroke-width="0.7"/>
+  <text x="330" y="27" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#7a3a18">Therapeutic Studio</text>
+
+  <rect x="398" y="8" width="116" height="28" rx="14" fill="#fde8d0" stroke="#d4724a" stroke-width="0.7"/>
+  <text x="456" y="27" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#7a3a18">Amnesty Int'l writing</text>
+
+  <rect x="524" y="8" width="106" height="28" rx="14" fill="#fde8d0" stroke="#d4724a" stroke-width="0.7"/>
+  <text x="577" y="27" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#7a3a18">Nature practice</text>
+
+  <rect x="640" y="8" width="126" height="28" rx="14" fill="#fde8d0" stroke="#d4724a" stroke-width="0.7"/>
+  <text x="703" y="27" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#7a3a18">Reading &amp; writing</text>
+
+  <rect x="776" y="8" width="136" height="28" rx="14" fill="#fde8d0" stroke="#d4724a" stroke-width="0.7"/>
+  <text x="844" y="27" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#7a3a18">Care &amp; community work</text>
+
+  <rect x="922" y="8" width="126" height="28" rx="14" fill="#fde8d0" stroke="#d4724a" stroke-width="0.7"/>
+  <text x="985" y="27" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#7a3a18">Consulting &amp; advising</text>
+</g>
+
+<!-- Continuous line under the pills -->
+<line x1="30" y1="830" x2="1150" y2="830" stroke="#e8d4c0" stroke-width="0.6" stroke-dasharray="3 5"/>
+
+<!-- ═══════════════════════════════════════════
+     HOW THE DEGREES COMPOUND
+════════════════════════════════════════════ -->
+<text x="60" y="862" font-family="Asap,sans-serif" font-size="9" fill="#aaa098" letter-spacing="0.06em">HOW THE DEGREES COMPOUND ON EXISTING EXPERIENCE</text>
+
+<rect x="30" y="876" width="340" height="88" rx="8" fill="#f8f2fc" stroke="#d8c0e8" stroke-width="0.8"/>
+<text x="200" y="896" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" font-weight="500" fill="#7a4a9a">MSc Disability Studies (Leeds)</text>
+<text x="46" y="912" font-family="Asap,sans-serif" font-size="8.5" fill="#5a4268">Transforms the lens — from "how do I make</text>
+<text x="46" y="926" font-family="Asap,sans-serif" font-size="8.5" fill="#5a4268">things accessible" to "why are these barriers</text>
+<text x="46" y="940" font-family="Asap,sans-serif" font-size="8.5" fill="#5a4268">here and who built them." Reframes everything</text>
+<text x="46" y="954" font-family="Asap,sans-serif" font-size="8.5" fill="#5a4268">that came before it — politically and ethically.</text>
+
+<rect x="390" y="876" width="380" height="88" rx="8" fill="#eef6fe" stroke="#b8d4f0" stroke-width="0.8"/>
+<text x="580" y="896" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" font-weight="500" fill="#3a7ab8">MA Counselling / Clinical Psych</text>
+<text x="406" y="912" font-family="Asap,sans-serif" font-size="8.5" fill="#2a4a78">Adds the therapeutic relationship to the theoretical</text>
+<text x="406" y="926" font-family="Asap,sans-serif" font-size="8.5" fill="#2a4a78">and practical base. With a Disability Studies MSc</text>
+<text x="406" y="940" font-family="Asap,sans-serif" font-size="8.5" fill="#2a4a78">underneath, the clinical work becomes unusually</text>
+<text x="406" y="954" font-family="Asap,sans-serif" font-size="8.5" fill="#2a4a78">grounded in justice, not just wellness frameworks.</text>
+
+<rect x="790" y="876" width="360" height="88" rx="8" fill="#f0f8e8" stroke="#b8d898" stroke-width="0.8"/>
+<text x="970" y="896" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" font-weight="500" fill="#2a6018">PhD</text>
+<text x="806" y="912" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">Opens the scholar-practitioner door fully. With 25+</text>
+<text x="806" y="926" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">years of practice feeding the research questions,</text>
+<text x="806" y="940" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">this is not a career pivot — it is a deepening of</text>
+<text x="806" y="954" font-family="Asap,sans-serif" font-size="8.5" fill="#2a5010">everything already built. Life experience is the data.</text>
+
+</svg>
+</div>
+
+<div id="tooltip">
+  <div class="tt-phase" id="tt-phase"></div>
+  <div class="tt-title" id="tt-title"></div>
+  <div class="tt-body" id="tt-body"></div>
+</div>
+
+<div id="sidebar">
+  <button id="sbc" onclick="closeSB()">✕</button>
+  <div class="sb-phase" id="sb-phase"></div>
+  <div class="sb-title" id="sb-title"></div>
+  <div class="sb-timing" id="sb-timing"></div>
+  <div class="sb-desc" id="sb-desc"></div>
+  <div class="sb-lbl" id="sb-lbl1"></div>
+  <ul class="sb-list" id="sb-list"></ul>
+  <div class="sb-lbl" id="sb-lbl2" style="display:none"></div>
+  <div id="sb-note"></div>
+</div>
+
+<footer>Education pathway map · MSc Disability Studies → MA Counselling / Clinical Psych → PhD · Click any phase or role leaf to explore</footer>
+
+<script>
+const phases = {
+  0: {
+    color:'#d4724a', label:'Existing foundation',
+    title:'Where things stand now',
+    timing:'25+ years of accumulated practice',
+    desc:'The existing foundation spans learning design, accessibility practice, care work, visual arts, neuroscience, grant development, and DEI leadership across more than a dozen organisations. This is not a starting point — it is an unusually rich platform from which to build.',
+    points:['Learning experience design across STEAM, healthcare, physics, and tech','Accessibility embedded into curricula, spaces, platforms, and culture','Care work across end-of-life, dementia, and disability settings','Studio practice running continuously for 24 years','BSc Neuroscience (Dalhousie) — psychoneuroimmunology focus','Grant development and program evaluation at scale','DEI leadership with measurable and lasting cultural impact'],
+    note:'The depth and breadth here is rare. Most people entering graduate programs in Disability Studies or Counselling come with far less. This foundation means the learning will be faster, the research questions richer, and the practice more grounded from day one.',
+    notelabel:'What this means for graduate study'
+  },
+  1: {
+    color:'#7a4a9a', label:'MSc Disability Studies — University of Leeds',
+    title:'MSc Disability Studies, University of Leeds',
+    timing:'Years 1–2 · Can be done online or part-time',
+    desc:'Leeds has one of the strongest Disability Studies programs in the world — grounded in disability justice, crip theory, and critical social science rather than a medical or deficit model. This degree would not teach how to help disabled people — it would interrogate the structures that disable people in the first place. That shift in lens changes everything.',
+    points:['Theoretical grounding in the social and political model of disability','Crip theory, disability justice movements, and intersectionality','Qualitative and quantitative research methodology','Critical analysis of policy, law, and institutional structures','International network — UK-based connections in disability scholarship','Option to do part-time or online — work can continue alongside','Dissertation as first research output — could directly inform PhD questions'],
+    note:'The MSc transforms the existing practice from skilled implementation to critical scholarship. The question shifts from "how do I make things accessible?" to "why do these barriers exist, who built them, and what would it take to dismantle them?" That is a more powerful place from which to do any of the subsequent work.',
+    notelabel:'Why Leeds specifically'
+  },
+  2: {
+    color:'#3a7ab8', label:'MA Counselling or Clinical Psychology',
+    title:'MA Counselling or Clinical Psychology',
+    timing:'Years 3–4 · UBC · SFU · TRU · or equivalent',
+    desc:'This is the dream path named explicitly — counselling that is disability-affirming, trauma-informed, and arts-based. With an MSc in Disability Studies already completed, this MA would produce something genuinely unusual: a clinician who understands disability not as a condition to treat but as an identity and political reality to work alongside.',
+    points:['Clinical credential — RCC (Registered Clinical Counsellor) or toward RPsych','Supervised practicum hours in clinical settings','Grounding in therapeutic modalities — CBT, ACT, somatic, arts-based approaches','Disability Studies MSc makes the specialisation unusually rigorous','Natural focus areas: disability-affirming therapy, palliative care, grief, arts-based','Practicum could be in hospice, disability orgs, or arts therapy settings','Connects the intellectual and the relational strands of the whole career'],
+    note:'The order matters here in an interesting way. Doing the MSc first means arriving at the MA with a critical disability justice lens already formed — which shapes how therapeutic relationships are understood, how diagnosis is questioned, and how power dynamics in the clinical relationship are navigated. Most counsellors do not have this foundation.',
+    notelabel:'How the MSc shapes the MA'
+  },
+  3: {
+    color:'#5a8a3a', label:'PhD — Clinical Psych, Health Sciences, or Public Health',
+    title:'PhD — Clinical Psychology, Health Sciences, or Public Health',
+    timing:'Years 5–8 · UBC · Dalhousie · Leeds · or equivalent',
+    desc:'The scholar-practitioner door that was blocked at TRIUMF. With 25+ years of practice feeding the research questions, a PhD at this stage of a career is not a detour — it is a deepening. The dissertation research would emerge directly from things already lived and worked on: disability and learning, therapeutic arts, end-of-life care, neuroethics, accessible health systems.',
+    points:['Opens faculty and research positions — the teaching stream finally accessible','Clinical Psychology PhD: full Registered Psychologist credential in BC','Health Sciences PhD: public health and systems-level research scope','Neuroethics, disability and AI, death literacy — all viable research areas','Practice experience means the research questions are grounded in reality','Life experience is the data — not a disadvantage in mature-age PhD programs','International scope — Leeds connection could enable UK-Canada research partnerships','Can be done full or part-time — clinical practice can continue alongside'],
+    note:'A PhD pursued after decades of practice produces different — and often richer — research than one done at 24. The questions are harder, the stakes are clearer, and the patience for nuance is deeper. This is the model that was always being reached for.',
+    notelabel:'Why later in career is an advantage'
+  },
+  4: {
+    color:'#c8822a', label:'Fully integrated — scholar, practitioner, artist, advocate',
+    title:'Fully integrated — year 9 and beyond',
+    timing:'Year 9 onward · all threads woven',
+    desc:'This is the destination the whole sequence points toward: a person who holds disability theory, clinical practice, doctoral research, neuroscience, arts practice, and 30+ years of accumulated experience simultaneously. That combination is rare enough that the role can be defined rather than applied for.',
+    points:['One of very few people globally holding this particular combination','Clinical practice — disability-affirming, arts-based, palliative — as ongoing work','Academic contribution — research, teaching, supervision — as ongoing work','Policy advisory work grounded in both theory and lived professional experience','Writing, essays, books — the Intellection and Learner strengths finding full expression','Studio practice continues as both personal and professional — therapeutic and artistic','Amnesty International advocacy deepened by academic and clinical grounding','Leeds MSc + Canadian PhD = genuinely international network and reach'],
+    note:'The work speaks — not the resume. At this point the combination is distinctive enough that institutions and communities come looking. The portfolio career that has always felt like the right shape finally has all its threads woven together.',
+    notelabel:'What makes this combination rare'
+  }
+};
+
+const roles = {
+  r0a:{color:'#d4724a',phase:'Existing foundation',title:'Learning Experience Designer',desc:'The current primary role — curriculum design, accessible facilitation, evidence-based learning across sectors. Continues throughout the entire pathway.'},
+  r0b:{color:'#d4724a',phase:'Existing foundation',title:'Accessibility Designer',desc:'Embedding accessibility into curricula, spaces, platforms, and culture. This role deepens significantly after the MSc adds political and theoretical grounding.'},
+  r0c:{color:'#d4724a',phase:'Existing foundation',title:'Andrea Robin Studio',desc:'The 24-year studio practice. Continues throughout — and feeds into arts-based therapy training during the MA phase.'},
+  r1a:{color:'#7a4a9a',phase:'MSc Disability Studies',title:'Disability Policy Advisor',desc:'The MSc unlocks genuine policy credibility. Moving from practitioner who embeds accessibility to advisor who can shape the frameworks that govern it.'},
+  r1b:{color:'#7a4a9a',phase:'MSc Disability Studies',title:'Research Assistant',desc:'The dissertation and coursework create an entry point into academic research — as an RA, research collaborator, or co-investigator. Builds toward the PhD.'},
+  r1c:{color:'#7a4a9a',phase:'MSc Disability Studies',title:'Accessibility Consultant',desc:'With theoretical depth added to the existing practice, consulting work carries more authority — able to challenge institutional assumptions, not just improve compliance.'},
+  r1d:{color:'#7a4a9a',phase:'MSc Disability Studies',title:'Disability Rights Advocate',desc:'The critical lens from Disability Studies enables more grounded advocacy work — alongside disability-led organisations rather than for them.'},
+  r2a:{color:'#3a7ab8',phase:'MA Counselling / Clinical Psych',title:'Registered Clinical Counsellor',desc:'The RCC credential opens private practice, institutional, and community counselling. With the MSc underneath, the practice is disability-affirming and justice-oriented from the start.'},
+  r2b:{color:'#3a7ab8',phase:'MA Counselling / Clinical Psych',title:'Disability-Affirming Therapist',desc:'A specialisation that is rare and in demand — counselling that works with disability as identity and lived reality rather than pathology to be managed.'},
+  r2c:{color:'#3a7ab8',phase:'MA Counselling / Clinical Psych',title:'Palliative Care Counsellor',desc:'End-of-life care has been woven through the whole career. The MA adds the clinical credential to make this a formal specialisation — deeply meaningful and well-grounded.'},
+  r2d:{color:'#3a7ab8',phase:'MA Counselling / Clinical Psych',title:'Arts-Based Therapist',desc:'The studio practice and therapeutic studio work feed directly into arts-based therapy modalities. The MA formalises what has already been developing for years.'},
+  r3a:{color:'#5a8a3a',phase:'PhD',title:'Researcher & Lecturer',desc:'Faculty and teaching-stream positions open fully with the PhD. The scholar-practitioner model that was sought at TRIUMF becomes the actual job description.'},
+  r3b:{color:'#5a8a3a',phase:'PhD',title:'Clinical Psychologist',desc:'A Clinical Psychology PhD leads to full Registered Psychologist status in BC — the highest clinical credential, enabling independent practice, assessment, and supervision.'},
+  r3c:{color:'#5a8a3a',phase:'PhD',title:'Health Researcher',desc:'A Health Sciences or Public Health PhD enables systems-level research — accessible health communication, disability and public health, end-of-life care systems design.'},
+  r3d:{color:'#5a8a3a',phase:'PhD',title:'Neuroethics Researcher',desc:'The neuroscience BSc, disability theory MSc, and clinical MA create an unusually rich foundation for neuroethics research — AI and disability, dementia and personhood, cognitive enhancement.'},
+  r3e:{color:'#5a8a3a',phase:'PhD',title:'Public Health Advisor',desc:'Systems-level advisory work grounded in research — designing how public health systems understand and serve disabled communities and people at end of life.'},
+  r4a:{color:'#c8822a',phase:'Fully integrated',title:'Chief Accessibility Officer or Director',desc:'Senior leadership with theory, research, clinical experience, and decades of practice behind it. The role can be defined rather than just applied for.'},
+  r4b:{color:'#c8822a',phase:'Fully integrated',title:'Disability Psychologist',desc:'A registered clinical psychologist with a disability justice specialisation and academic grounding — one of very few people in Canada holding this combination.'},
+  r4c:{color:'#c8822a',phase:'Fully integrated',title:'Professor & Researcher',desc:'Teaching, supervising, publishing, and practising simultaneously — the fully realised scholar-practitioner model. The breadth of the existing career makes the teaching unusually rich.'},
+  r4d:{color:'#c8822a',phase:'Fully integrated',title:'Author & Public Voice',desc:'The Intellection and Learner strengths find full expression — writing books, essays, public talks, and policy contributions on disability, mental health, learning, and what it means to be human.'},
+};
+
+const tt = document.getElementById('tooltip');
+
+function showTT(e, data, isPhase) {
+  document.getElementById('tt-phase').textContent = data.label || data.phase || '';
+  document.getElementById('tt-phase').style.color = data.color;
+  document.getElementById('tt-title').textContent = data.title;
+  document.getElementById('tt-body').textContent = (data.desc||'').slice(0,160) + ((data.desc||'').length>160?'…':'');
+  moveTT(e);
+  tt.classList.add('vis');
+}
+function moveTT(e) {
+  const tw=300,th=160;
+  let l=e.clientX+14, t=e.clientY-10;
+  if(l+tw>window.innerWidth) l=e.clientX-tw-14;
+  if(t+th>window.innerHeight) t=e.clientY-th-10;
+  tt.style.left=l+'px'; tt.style.top=t+'px';
+}
+function hideTT() { tt.classList.remove('vis'); }
+
+function openSB(data) {
+  const sb = document.getElementById('sidebar');
+  document.getElementById('sb-phase').textContent = data.label || data.phase || '';
+  document.getElementById('sb-phase').style.color = data.color;
+  document.getElementById('sb-title').textContent = data.title;
+  document.getElementById('sb-timing').textContent = data.timing || '';
+  document.getElementById('sb-desc').textContent = data.desc || '';
+
+  const lbl1 = document.getElementById('sb-lbl1');
+  const list = document.getElementById('sb-list');
+  const lbl2 = document.getElementById('sb-lbl2');
+  const note = document.getElementById('sb-note');
+
+  if (data.points) {
+    lbl1.textContent = 'What this phase involves';
+    list.innerHTML = data.points.map(p=>`<li>${p}</li>`).join('');
+  } else {
+    lbl1.textContent = '';
+    list.innerHTML = '';
+  }
+
+  if (data.note) {
+    lbl2.style.display = 'block';
+    lbl2.textContent = data.notelabel || 'Note';
+    note.innerHTML = `<div class="sb-note" style="border-color:${data.color}">${data.note}</div>`;
+  } else {
+    lbl2.style.display = 'none';
+    note.innerHTML = '';
+  }
+
+  sb.classList.add('open');
+}
+
+function closeSB() { document.getElementById('sidebar').classList.remove('open'); }
+document.addEventListener('click', closeSB);
+document.getElementById('sidebar').addEventListener('click', e=>e.stopPropagation());
+
+// Attach events to phase groups
+document.querySelectorAll('.phase-group').forEach(g => {
+  const key = g.id;
+  const data = phases[key.replace('p','')];
+  if (!data) return;
+  g.addEventListener('mouseenter', e => showTT(e, data, true));
+  g.addEventListener('mousemove', moveTT);
+  g.addEventListener('mouseleave', hideTT);
+  g.addEventListener('click', e => { e.stopPropagation(); openSB(data); });
+});
+
+// Attach events to role leaves
+document.querySelectorAll('.role-leaf').forEach(g => {
+  const key = g.dataset.role;
+  const data = roles[key];
+  if (!data) return;
+  g.addEventListener('mouseenter', e => showTT(e, data, false));
+  g.addEventListener('mousemove', moveTT);
+  g.addEventListener('mouseleave', hideTT);
+  g.addEventListener('click', e => { e.stopPropagation(); openSB(data); });
+});
+</script>
+</body>
+</html>
