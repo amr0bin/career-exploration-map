@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Career Exploration Map</title>
+<link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#faf8f3;
+  --bg2:#f4f0e8;
+  --bg3:#ede8dc;
+  --text:#2d2820;
+  --muted:#8a8070;
+  --subtle:#ddd8cc;
+  --sans:'Asap',system-ui,sans-serif;
+  --c0-fill:#f9c8c0;--c0-stroke:#d4724a;--c0-text:#7a2e14;
+  --c1-fill:#fde8a0;--c1-stroke:#c8962a;--c1-text:#6b4a08;
+  --c2-fill:#d4e8c0;--c2-stroke:#5a8a3a;--c2-text:#2a4a18;
+  --c3-fill:#c8dff5;--c3-stroke:#3a6ea8;--c3-text:#143060;
+  --cx-fill:#e8e4dc;--cx-stroke:#9a9488;--cx-text:#4a4640;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+header{padding:1.6rem 2rem 0.9rem;border-bottom:1px solid var(--subtle);background:var(--bg);display:flex;align-items:baseline;gap:1.2rem;flex-wrap:wrap}
+header h1{font-size:1.15rem;font-weight:500;letter-spacing:-0.01em;color:var(--text)}
+header p{font-size:11.5px;color:var(--muted);font-weight:300}
+.legend{display:flex;gap:1rem;padding:0.55rem 2rem;border-bottom:1px solid var(--subtle);flex-wrap:wrap;align-items:center;background:var(--bg2)}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);font-weight:400}
+.ld{width:14px;height:10px;border-radius:0 50% 0 50%;border:1.5px solid;flex-shrink:0;transform:rotate(-30deg)}
+.filter-bar{display:flex;gap:6px;padding:0.55rem 2rem;border-bottom:1px solid var(--subtle);flex-wrap:wrap;align-items:center;background:var(--bg)}
+.filter-bar span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-right:3px}
+.fb{font-family:var(--sans);font-size:11px;padding:3px 11px;border-radius:20px;border:1px solid var(--subtle);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;font-weight:400}
+.fb:hover{border-color:var(--text);color:var(--text)}
+.fb.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.canvas-wrap{width:100%;display:flex;justify-content:center;padding:1rem 0.5rem 2rem;background:var(--bg);overflow:hidden}
+svg#map{width:100%;max-width:1260px;height:auto;display:block}
+.ng{cursor:pointer}
+.ng:hover .nl{opacity:.85}
+#tooltip{position:fixed;background:#fffdf8;border:1px solid var(--subtle);border-radius:10px;padding:12px 14px;max-width:260px;z-index:1000;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 3px 18px rgba(0,0,0,.09)}
+#tooltip.vis{opacity:1}
+.tt-ring{font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:500;margin-bottom:3px}
+.tt-title{font-size:13.5px;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.3}
+.tt-desc{font-size:11px;color:#6a6258;line-height:1.55;font-weight:300}
+.tt-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px}
+.tt-tag{font-size:9.5px;padding:1px 6px;border-radius:20px;border:1px solid;font-weight:400}
+#sidebar{position:fixed;right:0;top:0;height:100vh;width:300px;background:#fffdf8;border-left:1px solid var(--subtle);padding:1.8rem 1.4rem;transform:translateX(100%);transition:transform .28s ease;z-index:200;overflow-y:auto;box-shadow:-3px 0 18px rgba(0,0,0,.06)}
+#sidebar.open{transform:translateX(0)}
+#sbc{position:absolute;top:.9rem;right:.9rem;background:none;border:none;color:var(--muted);font-size:17px;cursor:pointer;padding:3px 5px;border-radius:4px;font-family:var(--sans)}
+#sbc:hover{background:var(--bg2)}
+.sb-ring{font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:500;margin-bottom:6px}
+.sb-title{font-size:1.15rem;font-weight:500;line-height:1.2;margin-bottom:8px;color:var(--text)}
+.sb-desc{font-size:12px;color:#5a5248;line-height:1.65;margin-bottom:12px;font-weight:300}
+.sb-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:4px;font-weight:500;margin-top:10px}
+.sb-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:2px}
+.sb-tag{font-size:10px;padding:2px 8px;border-radius:20px;border:1px solid;font-weight:400}
+.sb-list{list-style:none}
+.sb-list li{font-size:11.5px;color:#5a5248;line-height:1.6;padding:3px 0;border-bottom:1px solid var(--subtle);font-weight:300}
+.sb-list li:last-child{border-bottom:none}
+.sb-edu{font-size:11px;background:var(--bg2);border-radius:5px;padding:8px 10px;color:#5a5248;font-weight:300;line-height:1.6;border-left:3px solid;margin-top:3px}
+.sb-avoid{font-size:11px;background:#fdf0ee;border-radius:5px;padding:8px 10px;color:#7a3828;font-weight:400;line-height:1.6;border-left:3px solid #c8724a;margin-top:3px}
+.sb-maybe{font-size:11px;background:#f5eef8;border-radius:5px;padding:8px 10px;color:#4a2068;font-weight:400;line-height:1.6;border-left:3px solid #7a4a9a;margin-top:3px}
+footer{text-align:center;padding:1.2rem;font-size:10.5px;color:var(--muted);font-weight:300;border-top:1px solid var(--subtle);background:var(--bg2)}
+</style>
+</head>
+<body>
+<header>
+  <h1>My Career Exploration Map</h1>
+  <p>Hover to preview · Click any leaf to think it through · Closer = more like what I already do · Further = bigger stretch</p>
+</header>
+<div class="legend">
+  <div class="li"><div class="ld" style="border-color:#d4724a;background:#f9c8c0"></div>Lived &amp; earned</div>
+  <div class="li"><div class="ld" style="border-color:#c8962a;background:#fde8a0"></div>Where I could go next</div>
+  <div class="li"><div class="ld" style="border-color:#5a8a3a;background:#d4e8c0"></div>Where my strengths could take me</div>
+  <div class="li"><div class="ld" style="border-color:#3a6ea8;background:#c8dff5"></div>What I'm reaching toward</div>
+  <div class="li"><div class="ld" style="border-color:#9a9488;background:#e8e4dc;opacity:.6"></div>Not for me</div>
+  <div class="li"><div class="ld" style="border-color:#7a4a9a;background:#e8d5f0;border-style:dashed"></div>Maybe — if the work has meaning</div>
+  <div style="margin-left:auto;font-size:10.5px;color:var(--muted)">← closer to who I am now &nbsp;·&nbsp; bigger stretch →</div>
+</div>
+<div class="filter-bar">
+  <span>Explore:</span>
+  <button class="fb active" data-f="all">All</button>
+  <button class="fb" data-f="0">Core</button>
+  <button class="fb" data-f="1">Adjacent</button>
+  <button class="fb" data-f="2">Emerging</button>
+  <button class="fb" data-f="3">Horizon</button>
+  <button class="fb" data-f="x">Avoid</button>
+  <button class="fb" data-f="m">Maybe</button>
+</div>
+<div class="canvas-wrap">
+  <svg id="map" viewBox="0 0 1260 1180" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="lf" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="rgba(0,0,0,0.08)"/>
+      </filter>
+    </defs>
+    <!-- Very faint orbital rings for spatial reference -->
+    <circle cx="630" cy="590" r="108" fill="none" stroke="#d4724a" stroke-width="0.5" stroke-dasharray="3 9" opacity="0.2"/>
+    <circle cx="630" cy="590" r="215" fill="none" stroke="#c8962a" stroke-width="0.5" stroke-dasharray="3 9" opacity="0.16"/>
+    <circle cx="630" cy="590" r="348" fill="none" stroke="#5a8a3a" stroke-width="0.5" stroke-dasharray="3 9" opacity="0.13"/>
+    <circle cx="630" cy="590" r="498" fill="none" stroke="#3a6ea8" stroke-width="0.5" stroke-dasharray="3 9" opacity="0.1"/>
+    <!-- Ring labels -->
+    <text x="632" y="488" text-anchor="middle" fill="#d4724a" font-family="Asap,sans-serif" font-size="9" opacity="0.45" letter-spacing="0.08em">LIVED &amp; EARNED</text>
+    <text x="632" y="381" text-anchor="middle" fill="#c8962a" font-family="Asap,sans-serif" font-size="9" opacity="0.4" letter-spacing="0.08em">WHERE I COULD GO</text>
+    <text x="632" y="248" text-anchor="middle" fill="#5a8a3a" font-family="Asap,sans-serif" font-size="9" opacity="0.35" letter-spacing="0.08em">MY STRENGTHS REACH</text>
+    <text x="632" y="98" text-anchor="middle" fill="#3a6ea8" font-family="Asap,sans-serif" font-size="9" opacity="0.3" letter-spacing="0.08em">REACHING TOWARD</text>
+    <!-- Connector lines -->
+    <g id="conn" fill="none" stroke-width="0.7" opacity="0.15">
+      <line x1="630" y1="590" x2="630" y2="487" stroke="#d4724a"/>
+      <line x1="630" y1="590" x2="712" y2="510" stroke="#d4724a"/>
+      <line x1="630" y1="590" x2="736" y2="590" stroke="#d4724a"/>
+      <line x1="630" y1="590" x2="712" y2="670" stroke="#d4724a"/>
+      <line x1="630" y1="590" x2="630" y2="692" stroke="#d4724a"/>
+      <line x1="630" y1="590" x2="548" y2="670" stroke="#d4724a"/>
+      <line x1="630" y1="590" x2="524" y2="590" stroke="#d4724a"/>
+      <line x1="630" y1="590" x2="548" y2="510" stroke="#d4724a"/>
+      <line x1="630" y1="590" x2="630" y2="378" stroke="#c8962a"/>
+      <line x1="630" y1="590" x2="768" y2="404" stroke="#c8962a"/>
+      <line x1="630" y1="590" x2="840" y2="506" stroke="#c8962a"/>
+      <line x1="630" y1="590" x2="843" y2="590" stroke="#c8962a"/>
+      <line x1="630" y1="590" x2="840" y2="674" stroke="#c8962a"/>
+      <line x1="630" y1="590" x2="768" y2="775" stroke="#c8962a"/>
+      <line x1="630" y1="590" x2="630" y2="802" stroke="#c8962a"/>
+      <line x1="630" y1="590" x2="492" y2="775" stroke="#c8962a"/>
+      <line x1="630" y1="590" x2="420" y2="674" stroke="#c8962a"/>
+      <line x1="630" y1="590" x2="417" y2="590" stroke="#c8962a"/>
+      <line x1="630" y1="590" x2="492" y2="404" stroke="#c8962a"/>
+      <line x1="630" y1="590" x2="630" y2="245" stroke="#5a8a3a"/>
+      <line x1="630" y1="590" x2="820" y2="272" stroke="#5a8a3a"/>
+      <line x1="630" y1="590" x2="958" y2="394" stroke="#5a8a3a"/>
+      <line x1="630" y1="590" x2="975" y2="556" stroke="#5a8a3a"/>
+      <line x1="630" y1="590" x2="950" y2="722" stroke="#5a8a3a"/>
+      <line x1="630" y1="590" x2="630" y2="935" stroke="#5a8a3a"/>
+      <line x1="630" y1="590" x2="422" y2="870" stroke="#5a8a3a"/>
+      <line x1="630" y1="590" x2="308" y2="722" stroke="#5a8a3a"/>
+      <line x1="630" y1="590" x2="285" y2="556" stroke="#5a8a3a"/>
+      <line x1="630" y1="590" x2="302" y2="394" stroke="#5a8a3a"/>
+      <line x1="630" y1="590" x2="440" y2="272" stroke="#5a8a3a"/>
+      <line x1="630" y1="590" x2="630" y2="95" stroke="#3a6ea8"/>
+      <line x1="630" y1="590" x2="880" y2="138" stroke="#3a6ea8"/>
+      <line x1="630" y1="590" x2="1065" y2="302" stroke="#3a6ea8"/>
+      <line x1="630" y1="590" x2="1120" y2="530" stroke="#3a6ea8"/>
+      <line x1="630" y1="590" x2="1080" y2="778" stroke="#3a6ea8"/>
+      <line x1="630" y1="590" x2="900" y2="990" stroke="#3a6ea8"/>
+      <line x1="630" y1="590" x2="360" y2="990" stroke="#3a6ea8"/>
+      <line x1="630" y1="590" x2="182" y2="778" stroke="#3a6ea8"/>
+      <line x1="630" y1="590" x2="138" y2="530" stroke="#3a6ea8"/>
+      <line x1="630" y1="590" x2="178" y2="302" stroke="#3a6ea8"/>
+      <line x1="630" y1="590" x2="380" y2="138" stroke="#3a6ea8"/>
+    </g>
+    <!-- Centre -->
+    <ellipse cx="630" cy="590" rx="52" ry="44" fill="#fde8d0" stroke="#c8824a" stroke-width="1.2"/>
+    <text x="630" y="583" text-anchor="middle" fill="#7a3a18" font-family="Asap,sans-serif" font-size="11" font-weight="500">my</text>
+    <text x="630" y="597" text-anchor="middle" fill="#7a3a18" font-family="Asap,sans-serif" font-size="11" font-weight="500">career</text>
+    <!-- Nodes rendered by JS -->
+    <g id="nodes"></g>
+  </svg>
+</div>
+<div id="tooltip">
+  <div class="tt-ring" id="tt-ring"></div>
+  <div class="tt-title" id="tt-title"></div>
+  <div class="tt-desc" id="tt-desc"></div>
+  <div class="tt-tags" id="tt-tags"></div>
+</div>
+<div id="sidebar">
+  <button id="sbc" onclick="closeSB()">✕</button>
+  <div class="sb-ring" id="sb-ring"></div>
+  <div class="sb-title" id="sb-title"></div>
+  <div class="sb-desc" id="sb-desc"></div>
+  <div class="sb-lbl">Tags &amp; strengths</div>
+  <div class="sb-tags" id="sb-tags"></div>
+  <div class="sb-lbl" id="sb-wl">Why this fits you</div>
+  <ul class="sb-list" id="sb-list"></ul>
+  <div class="sb-lbl" id="sb-el">Education / pathway</div>
+  <div id="sb-edu"></div>
+</div>
+<footer>My career exploration map · Closer = more like what I already do · Further = bigger stretch · Click any leaf to think it through</footer>
+
+<script>
+const RINGS = {
+  0:{label:'Lived and earned',      fill:'#f9c8c0',stroke:'#d4724a',text:'#7a2e14',border:'#e8a090'},
+  1:{label:'Where I could go next',     fill:'#fde8a0',stroke:'#c8962a',text:'#6b4a08',border:'#e8c870'},
+  2:{label:'Where my strengths could take me',  fill:'#d4e8c0',stroke:'#5a8a3a',text:'#2a4a18',border:'#a0c880'},
+  3:{label:'Reaching toward', fill:'#c8dff5',stroke:'#3a6ea8',text:'#143060',border:'#90bde8'},
+  x:{label:'Not for me',           fill:'#e8e4dc',stroke:'#9a9488',text:'#4a4640',border:'#c8c4bc'},
+  m:{label:'Maybe — if the work has meaning',       fill:'#e8d5f0',stroke:'#7a4a9a',text:'#3a1a58',border:'#c0a0d8'},
+};
+
+// 7 distinct leaf path generators — each takes cx,cy,rx,ry and returns a d= string
+// All are symmetric around (cx,cy), pointing upward, varied silhouette
+const LEAF_SHAPES = [
+  // 0: classic oval leaf, pointed top and bottom
+  (cx,cy,rx,ry)=>`M${cx},${cy-ry} C${cx+rx*0.9},${cy-ry*0.5} ${cx+rx*0.9},${cy+ry*0.5} ${cx},${cy+ry} C${cx-rx*0.9},${cy+ry*0.5} ${cx-rx*0.9},${cy-ry*0.5} ${cx},${cy-ry}Z`,
+  // 1: wide lobe leaf — broader than tall
+  (cx,cy,rx,ry)=>`M${cx},${cy-ry*0.95} C${cx+rx*1.1},${cy-ry*0.4} ${cx+rx*1.15},${cy+ry*0.35} ${cx},${cy+ry*0.95} C${cx-rx*1.15},${cy+ry*0.35} ${cx-rx*1.1},${cy-ry*0.4} ${cx},${cy-ry*0.95}Z`,
+  // 2: teardrop — rounded top, sharp bottom
+  (cx,cy,rx,ry)=>`M${cx},${cy+ry} C${cx+rx*0.9},${cy+ry*0.3} ${cx+rx*0.85},${cy-ry*0.5} ${cx},${cy-ry*0.95} C${cx-rx*0.85},${cy-ry*0.5} ${cx-rx*0.9},${cy+ry*0.3} ${cx},${cy+ry}Z`,
+  // 3: maple-ish — asymmetric wavy sides
+  (cx,cy,rx,ry)=>`M${cx},${cy-ry} C${cx+rx*0.5},${cy-ry*0.8} ${cx+rx*1.05},${cy-ry*0.2} ${cx+rx*0.8},${cy+ry*0.3} C${cx+rx*0.6},${cy+ry*0.7} ${cx+rx*0.2},${cy+ry} ${cx},${cy+ry} C${cx-rx*0.2},${cy+ry} ${cx-rx*0.6},${cy+ry*0.7} ${cx-rx*0.8},${cy+ry*0.3} C${cx-rx*1.05},${cy-ry*0.2} ${cx-rx*0.5},${cy-ry*0.8} ${cx},${cy-ry}Z`,
+  // 4: narrow lance — slim pointed both ends
+  (cx,cy,rx,ry)=>`M${cx},${cy-ry} C${cx+rx*0.55},${cy-ry*0.5} ${cx+rx*0.55},${cy+ry*0.5} ${cx},${cy+ry} C${cx-rx*0.55},${cy+ry*0.5} ${cx-rx*0.55},${cy-ry*0.5} ${cx},${cy-ry}Z`,
+  // 5: heart-leaf — cleft at top
+  (cx,cy,rx,ry)=>`M${cx},${cy+ry} C${cx-rx*1.0},${cy+ry*0.3} ${cx-rx*1.05},${cy-ry*0.4} ${cx-rx*0.4},${cy-ry*0.7} C${cx-rx*0.1},${cy-ry*0.9} ${cx},${cy-ry*0.6} ${cx},${cy-ry*0.6} C${cx},${cy-ry*0.6} ${cx+rx*0.1},${cy-ry*0.9} ${cx+rx*0.4},${cy-ry*0.7} C${cx+rx*1.05},${cy-ry*0.4} ${cx+rx*1.0},${cy+ry*0.3} ${cx},${cy+ry}Z`,
+  // 6: rounded paddle
+  (cx,cy,rx,ry)=>`M${cx},${cy-ry} C${cx+rx*1.0},${cy-ry*0.6} ${cx+rx*1.05},${cy+ry*0.15} ${cx+rx*0.6},${cy+ry*0.8} C${cx+rx*0.3},${cy+ry} ${cx-rx*0.3},${cy+ry} ${cx-rx*0.6},${cy+ry*0.8} C${cx-rx*1.05},${cy+ry*0.15} ${cx-rx*1.0},${cy-ry*0.6} ${cx},${cy-ry}Z`,
+];
+
+// Each ring uses a consistent leaf shape, avoid nodes use shape 4 (narrow/dashed)
+const RING_SHAPE = {0:0, 1:1, 2:2, 3:3, x:4};
+
+const nodes = [
+  // ── RING 0 CORE ──
+  {ring:0,x:630,y:487,rx:40,ry:33,rot:-10,label:'Learning\nDesigner',short:'Learning Experience Designer',
+   desc:'Your deepest professional identity — curriculum design, accessible facilitation, and evidence-based learning across STEAM, healthcare, physics, and tech.',
+   tags:['Instructional design','UDL','STEAM','Facilitation'],
+   why:['20+ years across 6+ sectors','600-hour curriculum at TRIUMF','First custom eval framework','Integrated learning improved wellbeing measurably'],
+   edu:'Already practicing. MEd in Learning Sciences deepens the credential.'},
+
+  {ring:0,x:715,y:510,rx:33,ry:27,rot:25,label:'Visual Artist\n& Studio',short:'Visual Artist / Studio Practice (24 yrs)',
+   desc:'Andrea Robin Studio is the connective tissue of your career — shaping how you see systems, culture, and meaning.',
+   tags:['BFA ECU','Critical studies','Ethics in creativity'],
+   why:['Schizophrenia Society Artist Award','Multiple group shows','Visual logic informs all design work'],
+   edu:'Ongoing. CATA art therapy training formalizes the therapeutic strand.'},
+
+  {ring:0,x:738,y:590,rx:31,ry:26,rot:5,label:'Accessibility\nDesigner',short:'Accessibility & Inclusion Designer',
+   desc:'You have embedded accessibility into curricula, physical spaces, digital platforms, and hiring practices — long before it became a checkbox.',
+   tags:['WCAG 2.1','Universal Design','UDL','eLearning audit'],
+   why:['Studio overhaul at ECU','Accessible eLearning for ICBC province-wide','WorkSafe training audit','Adaptive STEM tools at TRIUMF'],
+   edu:'CPACC (IAAP) formalizes your credential.'},
+
+  {ring:0,x:715,y:672,rx:30,ry:25,rot:-20,label:'Arts-in-Schools\nStrategist',short:'Arts Integration & STEAM Strategist',
+   desc:'At ArtStarts you built the case for arts as core curriculum, cultivating buy-in to shift BC from STEM to STEAM.',
+   tags:['STEAM advocacy','Curriculum','Arts-based learning'],
+   why:['Volunteer → Development Manager at ArtStarts','Shifted BC programs to STEAM','Co-designed with teachers, kids, artists'],
+   edu:'Graduate certificate in Arts Integration or Education Policy.'},
+
+  {ring:0,x:630,y:694,rx:30,ry:25,rot:15,label:'Grant &\nResearch Dev',short:'Grant & Research Development',
+   desc:'At DSF and UBC you administered $6M+ in grants and wrote proposals for accessible STEAM programming and accessible exhibit research.',
+   tags:['Grant writing','$6M+ funding','Equity evaluation'],
+   why:['Oversaw $6M+ experiential learning grants','Wrote HPSM-focused STEAM proposals','Piloted accessible museum exhibit research'],
+   edu:'Complements any senior policy or program role. No extra credential needed.'},
+
+  {ring:0,x:545,y:672,rx:30,ry:25,rot:-5,label:'Care Work &\nEnd-of-Life',short:'Care Work & Therapeutic Support',
+   desc:'You worked in end-of-life care in France (French), supported a nonverbal person with CP via AAC, and facilitated Alzheimer\'s Society programming.',
+   tags:['End-of-life care','AAC systems','Dementia facilitation','French'],
+   why:['Order of Malta bedside nursing 3 years','Lourdes hospital in French','CP night-shift with AAC','Alzheimer Society family facilitator'],
+   edu:'Art therapy (CATA/RCAT) or counselling diploma builds on this naturally.'},
+
+  {ring:0,x:522,y:590,rx:31,ry:26,rot:30,label:'DEI &\nCulture Change',short:'Culture Change & DEI Leadership',
+   desc:'At ECU you transformed Shop Technologies to 50% women/LGBTQIA+ within 7 years. That change lasted 13 years after you left.',
+   tags:['Hiring strategy','Culture transformation','TRC Calls to Action'],
+   why:['50% gender/LGBTQIA+ parity in 7 years','Positive Space workshops at UBC','TRC-aligned learning at ICBC'],
+   edu:'Advanced certificate in EDI Leadership strengthens policy roles.'},
+
+  {ring:0,x:545,y:510,rx:33,ry:27,rot:-15,label:'Learning\nTechnology',short:'Learning Technology & LMS Design',
+   desc:'At Lighthouse Labs you built a custom LMS in Python, applying UX design thinking and Sprint process to course architecture.',
+   tags:['LMS development','UX Design','Figma','Python'],
+   why:['Custom LMS at Lighthouse Labs','BrainStation UX Certificate','WCAG 2.1 eLearning audits','Sprint process for instructional design'],
+   edu:'IDEO Change Leadership cert held. Advanced digital learning design optional.'},
+
+  // ── RING 1 ADJACENT ──
+  {ring:1,x:630,y:378,rx:38,ry:31,rot:-8,label:'Accessibility\nAdvisor',short:'Accessibility Advisor (Policy or Institutional)',
+   desc:'A direct evolution from your practice — guiding universities, health authorities, or government to embed accessibility as strategy, not compliance.',
+   tags:['BC Accessibility Act','Accessible Canada Act','Equity audits'],
+   why:['Deep cross-sector accessibility practice','Cognitive accessibility and UDL expertise','Bridge research, design, and advocacy'],
+   edu:'CPACC (IAAP). Graduate certificate in Disability Studies or Public Policy.'},
+
+  {ring:1,x:770,y:404,rx:33,ry:27,rot:20,label:'Museum &\nCultural Access',short:'Director of Accessible Learning (Cultural Institutions)',
+   desc:'Institutions like the VAG, Museum of Anthropology, or Science World need someone who redesigns visitor experience through an accessibility-and-learning-science lens.',
+   tags:['Museum education','Accessible exhibit design','Visitor experience'],
+   why:['Science World in your history','Funded accessible museum exhibit pilots','ArtStarts connects arts to learning spaces'],
+   edu:'MA in Museum Studies with accessibility focus. Often created for the right person.'},
+
+  {ring:1,x:843,y:506,rx:32,ry:26,rot:0,label:'Org Learning\nConsultant',short:'Organizational Learning & Change Consultant',
+   desc:'You transformed HR into organizational learning at ICBC. As a consultant you\'d bring that across health, education, and government.',
+   tags:['OD consulting','Change leadership','Adult learning'],
+   why:['IDEO Change Leadership certificate','ICBC: HR → organizational learning','TRIUMF: custom learning eval framework'],
+   edu:'MEd in Adult Education or OD. andrearobin.com case studies anchor positioning.'},
+
+  {ring:1,x:845,y:590,rx:30,ry:25,rot:10,label:'Health System\nLearner Designer',short:'Health Literacy & System Learning Designer',
+   desc:'BC health authorities need people who can design how frontline workers and patients learn — especially during large transformations like Enhanced Care.',
+   tags:['Health literacy','Province-wide eLearning','Enhanced Care'],
+   why:['ICBC province-wide Enhanced Care facilitation','Alzheimer Society programming','Health outcomes research via neuroscience'],
+   edu:'Certificate in Health Communication. BC health authority pathway.'},
+
+  {ring:1,x:843,y:674,rx:30,ry:24,rot:-12,label:'STEAM Program\nLeader',short:'STEAM Education Program Leadership',
+   desc:'You helped shift an entire province from STEM to STEAM. Leading a STEAM program at a science centre, university, or foundation would let you build that bridge at scale.',
+   tags:['STEAM advocacy','Curriculum leadership','Inquiry learning'],
+   why:['Led BC-wide STEM→STEAM shift','Creative inquiry in STEM at TRIUMF','Designed experiential physics learning paths'],
+   edu:'MEd or MA in Science Education. TRIUMF network is a direct pathway.'},
+
+  {ring:1,x:770,y:775,rx:34,ry:28,rot:18,label:'Non-Clinical\nArt Therapist',short:'Non-Clinical Art Therapy Practitioner',
+   desc:'Your Therapeutic Studio practice already points here. Non-clinical art therapy in schools, hospices, and community settings is a natural culmination of your care and studio work.',
+   tags:['Therapeutic arts','Creative wellbeing','Community health'],
+   why:['24 years of studio practice','End-of-life care experience','Alzheimer Society facilitation'],
+   edu:'RCAT via CATA. Master of Art Therapy programs in Canada (Concordia, NSCAD).'},
+
+  {ring:1,x:630,y:802,rx:30,ry:25,rot:-5,label:'Public Sector\nLearning Strategist',short:'Public Sector Learning & Engagement Strategist',
+   desc:'Government ministries need people who design accessible, trauma-informed, culturally safe learning for diverse workforces during major policy change.',
+   tags:['BC Public Service','Policy alignment','TRC integration'],
+   why:['ICBC: province-wide Enhanced Care rollout','UBC: experiential learning administration','TRC-aligned learning design'],
+   edu:'Graduate certificate in Public Administration or Policy. BC Public Service pathway.'},
+
+  {ring:1,x:490,y:775,rx:30,ry:25,rot:8,label:'Community Arts\nFacilitator',short:'Community Arts & Social Practice Facilitator',
+   desc:'Embedding arts in community settings — housing, mental health, disability orgs — as a vehicle for wellbeing, identity, and voice.',
+   tags:['Social practice art','Disability arts','Participatory design'],
+   why:['Butterfly Way Ranger volunteer','Therapeutic Studio development','Alzheimer Society facilitation'],
+   edu:'Graduate diploma in Community Arts. Partnership with Vancouver community arts organizations.'},
+
+  {ring:1,x:417,y:674,rx:30,ry:25,rot:-22,label:'Inclusive\nCurriculum Designer',short:'Inclusive Curriculum Designer (Higher Ed)',
+   desc:'Post-secondary institutions need curriculum designers who understand UDL, decolonization, and accessibility as integrated — not additive — principles.',
+   tags:['UDL','Anti-colonial pedagogy','Higher ed'],
+   why:['7 years at ECU building inclusive studio practices','UBC Work Learn program administration','TRIUMF curriculum for diverse learners'],
+   edu:'Graduate certificate in Curriculum Design. Already credentialed for most roles.'},
+
+  {ring:1,x:415,y:590,rx:30,ry:25,rot:12,label:'Program\nEvaluator',short:'Learning Program Evaluator & Research Advisor',
+   desc:'Your neuroscience background makes you well-placed to evaluate learning programs — measuring equity, learning effectiveness, and organizational impact.',
+   tags:['Mixed methods','Equity evaluation','Learning analytics'],
+   why:['Built TRIUMF\'s first custom eval framework','Performance analytics for equity at ICBC','BSc Neuroscience — psychoneuroimmunology'],
+   edu:'Graduate research methods training. Certificate in Program Evaluation (CES).'},
+
+  {ring:1,x:490,y:404,rx:32,ry:27,rot:-18,label:'Experiential\nLearning Advisor',short:'Experiential Learning & WIL Advisor',
+   desc:'At UBC you administered $6M+ in WIL grants and built scalable, accessible experiential learning systems for 3,000 students.',
+   tags:['WIL','Co-op design','Employer partnerships'],
+   why:['UBC: oversaw 3,000 students in WIL','Accessible onboarding toolkits','Grant-funded equity evaluation'],
+   edu:'CEWIL Canada membership. MEd in Post-Secondary Education optional.'},
+
+  // ── RING 2 EMERGING ──
+  {ring:2,x:630,y:245,rx:38,ry:31,rot:-5,label:'Disability Policy\nAdvisor',short:'Disability Policy Advisor (Government or Advocacy)',
+   desc:'BC\'s Accessibility Act (2021) is still being implemented. You could shape how accessibility policy becomes real-world institutional practice.',
+   tags:['BC Accessibility Act','Accessible Canada Act','Policy translation'],
+   why:['Deep cross-sector accessibility practice','Cognitive accessibility and UDL expertise','Bridge between research, design, and advocacy'],
+   edu:'Graduate certificate in Public Policy or Disability Studies. Network with BC DABC.'},
+
+  {ring:2,x:820,y:272,rx:31,ry:26,rot:22,label:'Knowledge\nMobilization Lead',short:'Knowledge Mobilization & Translation Specialist',
+   desc:'Universities and research institutes need people who translate complex findings into accessible formats for diverse publics.',
+   tags:['Knowledge translation','Plain language','Research communication'],
+   why:['TRIUMF: translated physics for diverse learners','Neuroscience foundation for research literacy','Storytelling for systems change'],
+   edu:'Graduate certificate in Science Communication or KM. CIHR KT training programs.'},
+
+  {ring:2,x:958,y:394,rx:30,ry:25,rot:5,label:'Cognitive\nAccessibility Consultant',short:'Cognitive Accessibility & Universal Design Consultant',
+   desc:'A specialized niche at the intersection of learning science, design, and policy — helping public systems become genuinely cognitively accessible.',
+   tags:['Cognitive accessibility','Wayfinding','Plain language systems'],
+   why:['Accessible signage and wayfinding design at ECU','Redesigned studio instructional posters','WCAG 2.1 compliance advising at ICBC'],
+   edu:'CPACC + graduate research in cognitive accessibility. Neil Squire Society as partner.'},
+
+  {ring:2,x:975,y:556,rx:28,ry:23,rot:-8,label:'Scholar-\nPractitioner',short:'Scholar-Practitioner (Academic-Adjacent Research)',
+   desc:'The model you sought at TRIUMF and couldn\'t access. An affiliated researcher role where practice feeds scholarship.',
+   tags:['Applied research','Practitioner scholarship','Equity research'],
+   why:['Explicitly named this model in your career map','BSc Neuroscience as research foundation','Evidence-based frameworks already your approach'],
+   edu:'MEd or MA as entry. PhD in Education or Health Sciences as long-range path.'},
+
+  {ring:2,x:950,y:722,rx:27,ry:22,rot:15,label:'Psychedelic\nTherapy Educator',short:'Psychedelic-Assisted Therapy Educator & Trainer',
+   desc:'An emerging field that urgently needs learning designers with trauma-informed, neuroscience-grounded, and care-experienced backgrounds.',
+   tags:['Psilocybin','Trauma-informed','Health Canada SAP'],
+   why:['BSc Neuroscience directly relevant','End-of-life care (palliative psilocybin context)','Learning design for regulated health professions'],
+   edu:'Certificate in psychedelic-assisted therapy facilitation (UVic, MAPS Canada).'},
+
+  {ring:2,x:630,y:935,rx:35,ry:29,rot:6,label:'Registered\nArt Therapist',short:'Registered Art Therapist (RCAT)',
+   desc:'The formal clinical credential. Opens doors to hospital programs, palliative care, trauma treatment, and mental health settings.',
+   tags:['RCAT (CATA)','Palliative care','Trauma','Mental health'],
+   why:['24 years of studio practice','End-of-life care in two countries','Alzheimer Society facilitation','AAC-based non-verbal communication'],
+   edu:'Master of Art Therapy (NSCAD, Concordia, Athabasca). 2-3 years + clinical practicum.'},
+
+  {ring:2,x:422,y:870,rx:28,ry:23,rot:-14,label:'Trauma-Informed\nFacilitator Trainer',short:'Trauma-Informed Facilitation Trainer',
+   desc:'Training educators, managers, and clinicians in trauma-informed practice — a capacity you\'ve quietly built across sectors.',
+   tags:['Trauma-informed practice','Facilitator training','Psychological safety'],
+   why:['Facilitated Positive Space workshops','Cultural safety training design','IDEO human-centered change leadership'],
+   edu:'Certificate in Trauma-Informed Practice. Complement with therapy training if clinical path pursued.'},
+
+  {ring:2,x:308,y:722,rx:30,ry:25,rot:18,label:'Public Health\nLearning Strategist',short:'Public Health Education & Behaviour Change Designer',
+   desc:'Designing interventions for lasting behaviour change in diverse publics — using adult learning, creative engagement, and accessible communication.',
+   tags:['Behaviour change','Health communication','Public education'],
+   why:['BSc Neuroscience — psychoneuroimmunology focus','ICBC province-wide health learning design','Plain language public education expertise'],
+   edu:'MPH with health communication specialization, or certificate in Health Promotion.'},
+
+  {ring:2,x:285,y:556,rx:32,ry:27,rot:-6,label:'Neuroethics\n& Science Ethics',short:'Neuroethics / Science Ethics Researcher',
+   desc:'Questions at the intersection of neuroscience, AI, dementia, cognitive enhancement, and personhood — a field needing rare interdisciplinary thinkers.',
+   tags:['Neuroethics','Bioethics','AI ethics','Dementia personhood'],
+   why:['BSc Neuroscience (Dalhousie) — rare foundation','Ethics in creativity training from ECU','Alzheimer Society — dementia and personhood'],
+   edu:'Graduate work in Bioethics or Philosophy of Mind (UBC, Dalhousie). CIHR ethics programs.'},
+
+  {ring:2,x:302,y:394,rx:28,ry:23,rot:12,label:'Palliative\nCare Educator',short:'Palliative Care & End-of-Life Education Specialist',
+   desc:'Designing learning for healthcare teams, families, and communities around death, grief, and end-of-life care. Your lived practice is exceptional preparation.',
+   tags:['Palliative care','Grief education','Death literacy','French'],
+   why:['End-of-life care in Lourdes, France','Order of Malta bedside nursing','Alzheimer Society family facilitation'],
+   edu:'Certificate in Palliative Care Education (CHPCA). BC Hospice Palliative Care Association.'},
+
+  {ring:2,x:440,y:272,rx:28,ry:23,rot:-20,label:'EdTech\nAccessibility Lead',short:'EdTech Accessibility & Inclusive Design Lead',
+   desc:'The EdTech sector needs people who ensure digital learning products are genuinely accessible — not just compliant.',
+   tags:['EdTech','Accessible product design','WCAG','UX research'],
+   why:['BrainStation UX Certificate applied daily','Custom LMS at Lighthouse Labs','Co-design with disabled learners'],
+   edu:'CPACC. Product management certificate. Network with BCEdAccess, CanAssist.'},
+
+  // ── RING 3 HORIZON ──
+  {ring:3,x:630,y:95,rx:38,ry:32,rot:-4,label:'Director of\nAccessibility',short:'Chief Accessibility Officer / Director of Accessibility',
+   desc:'Senior institutional leadership responsible for accessibility strategy across programs, spaces, communications, and culture. Rapidly emerging under federal and provincial legislation.',
+   tags:['Executive leadership','Institutional strategy','ACA/BC Accessibility Act'],
+   why:['Every aspect of career builds toward systemic accessibility leadership','Rare: practitioner depth + systems thinking + policy understanding','CliftonStrengths: Strategic, Futuristic, Achiever — executive themes'],
+   edu:'MEd or MPA + senior experience. CPACC. Positions emerging rapidly under federal and provincial legislation.'},
+
+  {ring:3,x:880,y:138,rx:30,ry:25,rot:25,label:'Registered\nCounsellor (RCC)',short:'Registered Clinical Counsellor (RCC)',
+   desc:'Your explicit dream career path. Counselling — disability-affirming, trauma-informed, arts-based — integrates your care work, therapeutic studio, and understanding of human wellbeing.',
+   tags:['RCC','Trauma-informed','Arts-based therapy','Disability-affirming'],
+   why:['Direct care work across multiple populations','Non-clinical art therapy practice already','CliftonStrengths: Empathy, Relator, Developer'],
+   edu:'MA in Counselling Psychology (UBC, SFU, TRU). Art therapy credential is complementary.'},
+
+  {ring:3,x:1065,y:302,rx:27,ry:22,rot:8,label:'Bioethics\nAdvisor',short:'Bioethics Committee Advisor / Public Ethics Work',
+   desc:'Advising hospitals, research institutions, or government on ethical dimensions of health decisions, research design, and emerging technologies.',
+   tags:['Bioethics','Institutional ethics','AI policy','Health research ethics'],
+   why:['Neuroscience foundation','Ethics in creativity training','Systems-level strategic thinking'],
+   edu:'Graduate work in Bioethics (MA or certificate). Significant senior experience required.'},
+
+  {ring:3,x:1120,y:530,rx:26,ry:22,rot:-10,label:'Author &\nPublic Intellectual',short:'Author, Essayist & Public Intellectual',
+   desc:'Intellection #1, Learner #2, Input #3, and your love of writing all point toward a practice of essays, books, and public talks on learning, accessibility, and what it means to be human.',
+   tags:['Writing','Public speaking','Systems thinking','Advocacy'],
+   why:['Intellection #1, Learner #2, Input #3 — classic writer-thinker profile','Reading/writing/creating named as favourite verbs','24 years of interdisciplinary practice = unique perspective'],
+   edu:'No credential required — practice and platform. Start with case studies on andrearobin.com.'},
+
+  {ring:3,x:1080,y:778,rx:26,ry:22,rot:14,label:'Researcher &\nLecturer',short:'Researcher, Lecturer & Academic (Teaching-Focused)',
+   desc:'Teaching-stream faculty roles at teaching universities (Kwantlen, Capilano, BCIT, Emily Carr) — shaping the next generation of learning designers and accessibility practitioners.',
+   tags:['Teaching-stream faculty','Course design','Applied scholarship'],
+   why:['25+ years of facilitation and curriculum design','Breadth across art, science, health, and tech','CliftonStrengths: Futuristic, Developer, Individualization'],
+   edu:'MEd or MA minimum. Teaching-stream accessible with terminal degree in field.'},
+
+  {ring:3,x:900,y:990,rx:28,ry:23,rot:-6,label:'Social\nEntrepreneur',short:'Social Entrepreneur (Mission-Driven Venture)',
+   desc:'Founding a therapeutic arts centre, accessible learning studio, or disability-focused design consultancy that embodies your integrated vision.',
+   tags:['Social enterprise','Impact investing','Mission-driven leadership'],
+   why:['Andrea Robin Studio: 24 years independent practice','Integrated Learning Labs: long-term commitment','Futuristic + Strategic: pointing toward founding, not following'],
+   edu:'Certificate in Social Enterprise (SFU, BCIT). B Corp framework. Incubators: Centre for Social Innovation.'},
+
+  {ring:3,x:360,y:990,rx:26,ry:22,rot:-14,label:'Health Policy\nDesigner',short:'Health Policy & System Experience Designer',
+   desc:'Designing how patients, families, and frontline workers navigate complex health systems — combining learning design, accessibility, and health communication at policy level.',
+   tags:['Health policy','Patient experience','System navigation'],
+   why:['BSc Neuroscience — health science foundation','Province-wide health learning at ICBC','End-of-life care across two countries'],
+   edu:'MPH or MHA with health policy focus. Certificate in Health Systems Leadership.'},
+
+  {ring:3,x:182,y:778,rx:25,ry:21,rot:10,label:'International\nEducation Advisor',short:'International Disability & Inclusive Education Advisor',
+   desc:'Working with UNESCO, UNICEF, or international NGOs on inclusive education frameworks — particularly disability-inclusive and arts-integrated approaches.',
+   tags:['UNESCO','International development','French'],
+   why:['Amnesty International 28 years as volunteer','Lourdes France care work — cross-cultural','French language capacity'],
+   edu:'Graduate work in International Education or Development. MPA or MA with international focus.'},
+
+  {ring:3,x:138,y:530,rx:25,ry:21,rot:-5,label:'AI + Accessibility\nEthicist',short:'AI & Accessibility Ethics Researcher / Advisor',
+   desc:'As AI reshapes learning, work, and human experience, your combination — neuroscience, disability, learning science, and ethics — is urgently needed.',
+   tags:['AI ethics','Disability and AI','Algorithmic equity'],
+   why:['Neuroethics identified as key path','Disability and accessibility depth','CliftonStrengths: Strategic, Futuristic, Analytical'],
+   edu:'Certificate in AI Ethics (Montreal AI Ethics Institute). Graduate work in STS or AI Policy.'},
+
+  {ring:3,x:178,y:302,rx:25,ry:21,rot:18,label:'Palliative Care\nCounsellor',short:'Palliative Care Counsellor / Death Educator',
+   desc:'Combining end-of-life care experience, art therapy credential (when earned), and counselling training into a specialized practice around death, dying, and grief.',
+   tags:['Palliative counselling','Grief','Death literacy','Arts-based'],
+   why:['Unique combination of care work in two countries','Alzheimer Society facilitation','Order of Malta nursing foundation'],
+   edu:'MA in Counselling Psychology + RCAT. Specialized training via CHPCA. Very long pathway — deeply meaningful.'},
+
+  {ring:3,x:380,y:138,rx:25,ry:21,rot:-12,label:'Neuroscience\nCommunicator',short:'Neuroscience & Science Communication Specialist',
+   desc:'Translating cutting-edge neuroscience for public, policy, and education audiences — through writing, facilitation, multimedia, and curriculum.',
+   tags:['Science communication','Neuroscience','Public engagement'],
+   why:['BSc Neuroscience (Dalhousie)','TRIUMF: physics curriculum for diverse audiences','Input + Learner strengths: always building knowledge'],
+   edu:'Graduate certificate in Science Communication (UBC, Carleton). Newsletter or writing practice as platform.'},
+
+  // ── AVOID ──
+  {ring:'x',x:1188,y:162,rx:28,ry:20,rot:30,label:'Pure Sales\n& BD',short:'Pure Sales / Business Development',
+   desc:'Volume-driven, quota-measured, persuasion-first roles. Woo (31st) and Competition (34th) are your lowest CliftonStrengths — this would drain you invisibly.',
+   tags:['Pipeline metrics','Quotas','Cold outreach'],
+   why:['Woo: 31/34 — not how you energize','Competition: 34/34 — genuinely last','Depth over volume is your nature'],
+   edu:'N/A — not a fit.'},
+
+  {ring:'x',x:1228,y:390,rx:26,ry:18,rot:-20,label:'Competitive\nCorporate Exec',short:'Competitive Corporate Environments',
+   desc:'Advancement via internal ranking, zero-sum dynamics, and political maneuvering. Competition is your 34th strength — corrosive to your values.',
+   tags:['Zero-sum','Internal ranking','Political maneuvering'],
+   why:['Competition: 34/34 — genuinely last','Your values: Relationships, Achievement, Independence','Culture transformation is your move, not culture gaming'],
+   edu:'N/A — not a fit.'},
+
+  {ring:'x',x:1218,y:650,rx:25,ry:18,rot:10,label:'Repetitive\nTech Roles',short:'Highly Repetitive Technical Roles',
+   desc:'Data entry, routine QA, formulaic compliance auditing. Learner (#2) and Input (#3) need constant new material — repetition is slow suffocation.',
+   tags:['Data entry','Routine QA','No variation'],
+   why:['Learner: 2nd strength — needs new territory constantly','Input: 3rd strength — always collecting new ideas','20+ years of evolving roles confirms this pattern'],
+   edu:'N/A — not a fit.'},
+
+  {ring:'x',x:1060,y:920,rx:27,ry:19,rot:-15,label:'Operations\n& Logistics',short:'Operations or Logistics Management',
+   desc:'Roles centred on supply chain and operational efficiency without human complexity or meaning attached. Restorative wants to fix things with purpose.',
+   tags:['Supply chain','Scheduling','Neutral systems'],
+   why:['Restorative: needs meaning attached to problem-solving','Intellection: needs complexity and ideas','Boredom is a real risk, not just discomfort'],
+   edu:'N/A — not a fit.'},
+
+  {ring:'m',x:630,y:1130,rx:28,ry:22,rot:5,label:'High-Intensity\nClinical Care',short:'High-Intensity Clinical Care (if values aligned)',
+   desc:'Your care history — end-of-life in France, CP night-shift support, Alzheimer\'s family facilitation — shows you absolutely can sustain high-intensity care work when the purpose is clear and the impact is real. The question is context, not capacity.',
+   tags:['Palliative care','Crisis support','Intensive care','Mission-driven'],
+   why:['Sustained end-of-life care in two countries — demanding and meaningful','CP night-shift: non-verbal, high-needs, sustained support','Alzheimer Society facilitation for families in crisis','Care is a core value, not just a skill — when meaning is present, capacity follows'],
+   edu:'If this path calls: MA in Counselling Psychology, RCAT, or nursing bridge programs. Specialize in palliative, disability, or trauma — not generalist high-volume.'},
+
+  {ring:'x',x:200,y:920,rx:26,ry:18,rot:20,label:'Event Production\n& Logistics',short:'Large-Scale Event Management or Production',
+   desc:'Coordinating festivals or large conferences — hundreds of logistics under time pressure — conflicts with Deliberative + Intellection.',
+   tags:['Festival coordination','Time pressure','Context-switching'],
+   why:['Deliberative: 13th — careful, not reactive','Intellection: 1st — needs depth, not noise','Your best work happens with sustained attention'],
+   edu:'N/A — not a fit.'},
+
+  {ring:'x',x:72,y:660,rx:25,ry:18,rot:-8,label:'Transactional\nHR',short:'Traditional Transactional HR',
+   desc:'Recruitment coordination, payroll, policy enforcement HR. You\'ve already evolved beyond HR thinking at ICBC — going back would feel like regression.',
+   tags:['Recruitment admin','Payroll','Policy enforcement'],
+   why:['You transformed HR into organizational learning at ICBC','Systems change is your orientation','You outgrow transactional roles rapidly'],
+   edu:'N/A — not a fit.'},
+
+  {ring:'x',x:68,y:400,rx:25,ry:18,rot:15,label:'Pure Commercial\nEntrepreneurship',short:'Independent Entrepreneurship (Purely Commercial)',
+   desc:'A business where success depends on revenue growth without a mission anchor. Andrea Robin Studio proves your entrepreneurial capacity — but always mission-first.',
+   tags:['Revenue-first','Client acquisition','No mission anchor'],
+   why:['Independence needed is intellectual and values-driven, not market-driven','Studio: 24 years proves you can run a practice — mission is the key variable'],
+   edu:'N/A — not a fit.'},
+
+  {ring:'x',x:80,y:175,rx:25,ry:18,rot:-22,label:'Siloed Academic\nResearch',short:'Siloed Academic Research (Without Practice)',
+   desc:'Traditional tenure-track research: publish narrowly, compete in isolation, stay within a single lane. Your TRIUMF frustration showed exactly why this doesn\'t fit.',
+   tags:['Single discipline','Publish or perish','No practice integration'],
+   why:['TRIUMF: scholar-practitioner model blocked — you named this pain','Interdisciplinary nature is incompatible with silo','Input + Learner need breadth, not narrow depth'],
+   edu:'N/A — not a fit.'},
+
+  {ring:'m',x:840,y:48,rx:24,ry:20,rot:12,label:'Crisis &\nEmergency Support',short:'Crisis & Emergency Support (if values aligned)',
+   desc:'When the work is deeply purposeful — crisis counselling, palliative emergency, disability support in acute settings — your care instincts, trauma-informed skills, and Restorative strength come forward. The distinction is meaningful crisis response vs reactive triage without context.',
+   tags:['Crisis counselling','Palliative emergency','Disability crisis support','Trauma-informed'],
+   why:['Restorative: 4th strength — drawn to fixing and healing in high-stakes moments','Care work in demanding settings has always been meaningful to you','Trauma-informed facilitation is already in your toolkit','The risk is reactive triage without purpose — not crisis work itself'],
+   edu:'If this path calls: crisis intervention training (ASIST, SafeTALK), trauma-informed care certification, counselling credential. Specialize in disability, grief, or palliative crisis — not generalist ER triage.'},
+];
+
+const svgNS='http://www.w3.org/2000/svg';
+const nodesG=document.getElementById('nodes');
+const tt=document.getElementById('tooltip');
+
+function leafPath(shape,cx,cy,rx,ry,rot){
+  const d=shape(cx,cy,rx,ry);
+  return d;
+}
+
+function makeNode(n,idx){
+  const isAvoid=n.ring==='x'||n.ring==='m';
+  const ring=RINGS[n.ring];
+  const shapeIdx=isAvoid?4:RING_SHAPE[n.ring];
+  const shapeFn=LEAF_SHAPES[shapeIdx];
+  // vary shape within ring by cycling through variants
+  const variantFn = isAvoid ? LEAF_SHAPES[4] : LEAF_SHAPES[(shapeIdx + Math.floor(idx/8)) % LEAF_SHAPES.length];
+
+  const g=document.createElementNS(svgNS,'g');
+  g.setAttribute('class','ng');
+  g.setAttribute('data-ring',n.ring);
+  g.setAttribute('transform',`rotate(${n.rot||0},${n.x},${n.y})`);
+
+  const path=document.createElementNS(svgNS,'path');
+  const rx=n.rx||(isAvoid?22:30);
+  const ry=n.ry||(isAvoid?18:25);
+  path.setAttribute('d',variantFn(n.x,n.y,rx,ry));
+  path.setAttribute('fill',ring.fill);
+  path.setAttribute('stroke',ring.stroke);
+  path.setAttribute('stroke-width',isAvoid?'0.7':'1');
+  if(isAvoid){path.setAttribute('stroke-dasharray','3 2.5');path.setAttribute('opacity','0.72');}
+  path.setAttribute('filter',isAvoid?'none':'url(#lf)');
+  path.setAttribute('class','nl');
+  g.appendChild(path);
+
+  // Midrib vein line
+  if(!isAvoid){
+    const vein=document.createElementNS(svgNS,'line');
+    vein.setAttribute('x1',n.x); vein.setAttribute('y1',n.y-ry*0.8);
+    vein.setAttribute('x2',n.x); vein.setAttribute('y2',n.y+ry*0.75);
+    vein.setAttribute('stroke',ring.stroke); vein.setAttribute('stroke-width','0.5');
+    vein.setAttribute('opacity','0.35'); vein.setAttribute('pointer-events','none');
+    g.appendChild(vein);
+  }
+
+  const lines=n.label.split('\n');
+  const fsize=rx>36?10.5:(rx>30?9.5:9);
+  const lh=fsize*1.3;
+  const totalH=(lines.length-1)*lh;
+
+  lines.forEach((line,i)=>{
+    const t=document.createElementNS(svgNS,'text');
+    t.setAttribute('x',n.x);
+    t.setAttribute('y',n.y - totalH/2 + i*lh + (isAvoid?lh*0.55:lh*0.4));
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('dominant-baseline','central');
+    t.setAttribute('fill',isAvoid?ring.stroke:ring.text);
+    t.setAttribute('font-size',fsize);
+    t.setAttribute('font-family','Asap,sans-serif');
+    t.setAttribute('font-weight',isAvoid?'300':'400');
+    t.setAttribute('opacity',isAvoid?'0.7':'1');
+    t.setAttribute('pointer-events','none');
+    t.textContent=line;
+    g.appendChild(t);
+  });
+
+  g.addEventListener('mouseenter',e=>showTT(e,n));
+  g.addEventListener('mousemove',moveTT);
+  g.addEventListener('mouseleave',hideTT);
+  g.addEventListener('click',e=>{e.stopPropagation();openSB(n);});
+  nodesG.appendChild(g);
+}
+
+// Use different leaf variants per node for visual variety
+nodes.forEach((n,i)=>{
+  // Override the shape function per node for variety
+  const isAvoid=n.ring==='x'||n.ring==='m';
+  const baseShape=isAvoid?4:RING_SHAPE[n.ring];
+  // cycle through adjacent shapes for visual interest
+  const variants=[0,1,2,3,5,6];
+  n._shapeIdx = isAvoid ? 4 : variants[i % variants.length];
+  makeNode(n,i);
+});
+
+function showTT(e,n){
+  const ring=RINGS[n.ring];
+  document.getElementById('tt-ring').textContent=ring.label;
+  document.getElementById('tt-ring').style.color=ring.stroke;
+  document.getElementById('tt-title').textContent=n.short;
+  document.getElementById('tt-desc').textContent=n.desc.length>145?n.desc.slice(0,143)+'…':n.desc;
+  const te=document.getElementById('tt-tags');
+  te.innerHTML='';
+  n.tags.slice(0,3).forEach(tag=>{
+    const s=document.createElement('span');
+    s.className='tt-tag';
+    s.style.borderColor=ring.border;
+    s.style.color=ring.stroke;
+    s.textContent=tag;
+    te.appendChild(s);
+  });
+  moveTT(e);
+  tt.classList.add('vis');
+}
+function moveTT(e){
+  const tw=260,th=175;
+  let l=e.clientX+14,t=e.clientY-10;
+  if(l+tw>window.innerWidth)l=e.clientX-tw-14;
+  if(t+th>window.innerHeight)t=e.clientY-th-10;
+  tt.style.left=l+'px';tt.style.top=t+'px';
+}
+function hideTT(){tt.classList.remove('vis');}
+
+function openSB(n){
+  const ring=RINGS[n.ring];
+  const isAvoid=n.ring==='x'||n.ring==='m';
+  document.getElementById('sb-ring').textContent=ring.label;
+  document.getElementById('sb-ring').style.color=ring.stroke;
+  document.getElementById('sb-title').textContent=n.short;
+  document.getElementById('sb-desc').textContent=n.desc;
+  const te=document.getElementById('sb-tags');
+  te.innerHTML='';
+  n.tags.forEach(tag=>{
+    const s=document.createElement('span');
+    s.className='sb-tag';
+    s.style.borderColor=ring.border;
+    s.style.color=ring.stroke;
+    s.textContent=tag;
+    te.appendChild(s);
+  });
+  document.getElementById('sb-wl').textContent=n.ring==='m'?'Why this could work for me':isAvoid?'Why this is not for me':'Why this fits me';
+  const le=document.getElementById('sb-list');
+  le.innerHTML='';
+  n.why.forEach(item=>{
+    const li=document.createElement('li');
+    li.textContent='→ '+item;
+    le.appendChild(li);
+  });
+  const isMaybe=n.ring==='m';
+  document.getElementById('sb-el').textContent=(isAvoid&&!isMaybe)?'Note':'Education / pathway';
+  const eb=document.getElementById('sb-edu');
+  if(isAvoid&&!isMaybe){
+    eb.innerHTML='<div class="sb-avoid">'+n.edu+'</div>';
+  } else {
+    eb.innerHTML='<div class="sb-edu" style="border-color:'+ring.stroke+'">'+n.edu+'</div>';
+  }
+  document.getElementById('sidebar').classList.add('open');
+}
+function closeSB(){document.getElementById('sidebar').classList.remove('open');}
+document.addEventListener('click',closeSB);
+document.getElementById('sidebar').addEventListener('click',e=>e.stopPropagation());
+
+document.querySelectorAll('.fb').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const f=btn.dataset.f;
+    document.querySelectorAll('.ng').forEach(g=>{
+      const match=f==='all'||g.dataset.ring===f;
+      g.style.opacity=match?'1':'0.07';
+      g.style.pointerEvents=match?'all':'none';
+    });
+    document.getElementById('conn').style.opacity=f==='all'?'1':'0.04';
+  });
+});
+</script>
+</body>
+</html>
