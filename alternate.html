@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What else is possible — alternate path map</title>
+<link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#faf8f3;
+  --bg2:#f4f0e8;
+  --subtle:#ddd8cc;
+  --text:#2d2820;
+  --muted:#8a8070;
+  --sans:'Asap',system-ui,sans-serif;
+  --c1:#c8622a; --c1l:#fde8d8; --c1d:#7a2e10;
+  --c2:#3a7a58; --c2l:#d8f0e4; --c2d:#1a4028;
+  --c3:#5a4a9a; --c3l:#e8e0f8; --c3d:#2a1a58;
+  --c4:#b04a3a; --c4l:#f8dcd8; --c4d:#6a1a10;
+  --c5:#3a6a9a; --c5l:#d8ecf8; --c5d:#1a3060;
+  --c6:#7a7a2a; --c6l:#f0f0d0; --c6d:#3a3a08;
+  --c7:#9a3a6a; --c7l:#f4d8e8; --c7d:#5a1038;
+  --c8:#2a7a7a; --c8l:#d0f0f0; --c8d:#0a3a3a;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
+header{padding:1.6rem 2rem 0.9rem;border-bottom:1px solid var(--subtle);background:var(--bg)}
+header h1{font-size:1.15rem;font-weight:500;letter-spacing:-0.01em}
+header p{font-size:11.5px;color:var(--muted);font-weight:300;margin-top:3px;font-style:italic}
+.canvas-wrap{width:100%;overflow-x:auto;padding:1.5rem 0.5rem 3rem;background:var(--bg)}
+svg#map{display:block;margin:0 auto}
+.nl{cursor:pointer;transition:opacity .18s}
+.nl:hover .nb{opacity:.85}
+#tooltip{position:fixed;background:#fffdf8;border:1px solid var(--subtle);border-radius:10px;padding:13px 15px;max-width:290px;z-index:1000;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 3px 18px rgba(0,0,0,.09)}
+#tooltip.vis{opacity:1}
+.tt-cat{font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:500;margin-bottom:3px}
+.tt-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.3}
+.tt-body{font-size:11px;color:#6a6258;line-height:1.55;font-weight:300}
+#sidebar{position:fixed;right:0;top:0;height:100vh;width:320px;background:#fffdf8;border-left:1px solid var(--subtle);padding:1.8rem 1.5rem;transform:translateX(100%);transition:transform .28s ease;z-index:200;overflow-y:auto;box-shadow:-3px 0 18px rgba(0,0,0,.06)}
+#sidebar.open{transform:translateX(0)}
+#sbc{position:absolute;top:.9rem;right:.9rem;background:none;border:none;color:var(--muted);font-size:17px;cursor:pointer;padding:3px 5px;border-radius:4px;font-family:var(--sans)}
+#sbc:hover{background:var(--bg2)}
+.sb-cat{font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:500;margin-bottom:5px}
+.sb-title{font-size:1.1rem;font-weight:500;line-height:1.2;margin-bottom:8px;color:var(--text)}
+.sb-desc{font-size:12px;color:#5a5248;line-height:1.68;margin-bottom:12px;font-weight:300}
+.sb-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:5px;font-weight:500;margin-top:10px}
+.sb-list{list-style:none}
+.sb-list li{font-size:11.5px;color:#5a5248;line-height:1.6;padding:3px 0;border-bottom:1px solid var(--subtle);font-weight:300}
+.sb-list li:last-child{border-bottom:none}
+.sb-list li::before{content:'→ ';color:var(--muted)}
+.sb-note{font-size:11px;background:var(--bg2);border-radius:5px;padding:9px 11px;color:#5a5248;font-weight:300;line-height:1.65;border-left:3px solid;margin-top:4px}
+.sb-stretch{font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid;font-weight:400;display:inline-block;margin-top:8px}
+footer{text-align:center;padding:1.2rem;font-size:10.5px;color:var(--muted);font-weight:300;border-top:1px solid var(--subtle);background:var(--bg2)}
+</style>
+</head>
+<body>
+<header>
+  <h1>What else is possible — an alternate path</h1>
+  <p>If starting over, with all existing strengths, and optimising for impact, meaning, and joy — what might a younger version choose? · Click any leaf to think it through</p>
+</header>
+<div class="canvas-wrap">
+<svg id="map" viewBox="0 0 1200 1080" width="1200" height="1080" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <filter id="sf" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="rgba(0,0,0,0.07)"/>
+  </filter>
+</defs>
+
+<!-- Background texture — very faint radial rings suggesting openness -->
+<circle cx="600" cy="520" r="200" fill="none" stroke="#e8e0d4" stroke-width="0.5" stroke-dasharray="2 8" opacity="0.5"/>
+<circle cx="600" cy="520" r="380" fill="none" stroke="#e8e0d4" stroke-width="0.5" stroke-dasharray="2 8" opacity="0.4"/>
+<circle cx="600" cy="520" r="520" fill="none" stroke="#e8e0d4" stroke-width="0.5" stroke-dasharray="2 8" opacity="0.3"/>
+
+<!-- Centre — the self -->
+<ellipse cx="600" cy="520" rx="58" ry="46" fill="#fde8d0" stroke="#c8724a" stroke-width="1.2" filter="url(#sf)"/>
+<text x="600" y="513" text-anchor="middle" font-family="Asap,sans-serif" font-size="11" font-weight="500" fill="#7a3a18">your</text>
+<text x="600" y="528" text-anchor="middle" font-family="Asap,sans-serif" font-size="11" font-weight="500" fill="#7a3a18">strengths</text>
+<text x="600" y="543" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" font-weight="300" fill="#a06040" font-style="italic">unchanged</text>
+
+<!-- Connector lines — very faint, radiating out -->
+<g stroke="#d8d0c8" stroke-width="0.6" opacity="0.4" fill="none">
+  <line x1="600" y1="520" x2="600" y2="220"/>
+  <line x1="600" y1="520" x2="835" y2="300"/>
+  <line x1="600" y1="520" x2="940" y2="490"/>
+  <line x1="600" y1="520" x2="870" y2="760"/>
+  <line x1="600" y1="520" x2="660" y2="870"/>
+  <line x1="600" y1="520" x2="430" y2="880"/>
+  <line x1="600" y1="520" x2="310" y2="750"/>
+  <line x1="600" y1="520" x2="260" y2="490"/>
+  <line x1="600" y1="520" x2="360" y2="290"/>
+</g>
+
+<!-- ══════════════════════════════════════
+     CLUSTER 1 — HEALING ARTS & SOMATIC
+     Top centre — most resonant with existing care work
+════════════════════════════════════════ -->
+<text x="600" y="105" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#9a8880" letter-spacing="0.07em">HEALING ARTS &amp; SOMATIC PRACTICE</text>
+
+<!-- Somatic Practitioner -->
+<g class="nl" data-node="somatic">
+  <path d="M530,130 C555,112 590,118 600,138 C610,158 598,182 572,188 C546,194 518,178 512,158 C506,138 516,142 530,130Z" fill="#f4d8e8" stroke="#9a3a6a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <line x1="545" y1="158" x2="558" y2="158" stroke="#9a3a6a" stroke-width="0.4" opacity="0.3"/>
+  <text x="558" y="146" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#5a1038">Somatic</text>
+  <text x="558" y="158" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#5a1038">Practitioner</text>
+</g>
+
+<!-- Dance / Movement Therapist -->
+<g class="nl" data-node="movement">
+  <path d="M610,118 C638,105 668,115 672,138 C676,160 658,178 632,178 C606,178 590,160 596,138 C600,122 596,126 610,118Z" fill="#f4d8e8" stroke="#9a3a6a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="634" y="142" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#5a1038">Movement</text>
+  <text x="634" y="154" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#5a1038">Therapist</text>
+</g>
+
+<!-- Expressive Arts Facilitator -->
+<g class="nl" data-node="expressive">
+  <path d="M680,145 C705,130 738,138 742,162 C746,184 726,200 700,198 C674,196 658,178 662,156 C664,140 668,154 680,145Z" fill="#f4d8e8" stroke="#9a3a6a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="700" y="168" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#5a1038">Expressive Arts</text>
+  <text x="700" y="180" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#5a1038">Facilitator</text>
+</g>
+
+<!-- ══════════════════════════════════════
+     CLUSTER 2 — NATURE & ECOLOGY
+     Upper right
+════════════════════════════════════════ -->
+<text x="880" y="188" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#9a8880" letter-spacing="0.07em">NATURE &amp; ECOLOGY</text>
+
+<!-- Ecotherapist -->
+<g class="nl" data-node="ecotherapy">
+  <path d="M790,218 C815,200 850,208 856,232 C862,256 842,276 816,274 C790,272 770,252 774,228 C778,210 778,228 790,218Z" fill="#d8f0e4" stroke="#3a7a58" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="814" y="240" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#1a4028">Ecotherapist</text>
+  <text x="814" y="252" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#1a4028">/ Forest Therapy</text>
+</g>
+
+<!-- Conservation Educator -->
+<g class="nl" data-node="conservation">
+  <path d="M862,255 C892,238 928,248 932,274 C936,298 912,316 884,312 C856,308 836,288 844,264 C850,246 852,264 862,255Z" fill="#d8f0e4" stroke="#3a7a58" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="886" y="278" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#1a4028">Conservation</text>
+  <text x="886" y="290" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#1a4028">Educator</text>
+</g>
+
+<!-- Permaculture / Food Systems -->
+<g class="nl" data-node="permaculture">
+  <path d="M900,335 C928,316 962,326 964,352 C966,376 942,394 914,390 C886,386 868,366 876,342 C882,324 882,344 900,335Z" fill="#d8f0e4" stroke="#3a7a58" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="918" y="355" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#1a4028">Permaculture /</text>
+  <text x="918" y="367" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#1a4028">Food Systems</text>
+</g>
+
+<!-- ══════════════════════════════════════
+     CLUSTER 3 — LAW & ADVOCACY
+     Right
+════════════════════════════════════════ -->
+<text x="985" y="420" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#9a8880" letter-spacing="0.07em">LAW &amp; ADVOCACY</text>
+
+<!-- Disability Rights Lawyer -->
+<g class="nl" data-node="law">
+  <path d="M910,448 C938,430 972,440 974,466 C976,492 952,510 924,506 C896,502 876,482 884,458 C890,440 892,460 910,448Z" fill="#d8ecf8" stroke="#3a6a9a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="928" y="472" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#1a3060">Disability Rights</text>
+  <text x="928" y="484" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#1a3060">Lawyer / JD</text>
+</g>
+
+<!-- Human Rights Advocate -->
+<g class="nl" data-node="humanrights">
+  <path d="M918,530 C946,512 980,522 982,548 C984,574 960,592 932,588 C904,584 884,564 892,540 C898,522 900,542 918,530Z" fill="#d8ecf8" stroke="#3a6a9a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="936" y="554" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#1a3060">Human Rights</text>
+  <text x="936" y="566" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#1a3060">Advocate</text>
+</g>
+
+<!-- Policy Architect -->
+<g class="nl" data-node="policyarch">
+  <path d="M900,618 C928,600 962,610 964,636 C966,660 942,678 914,674 C886,670 868,650 876,626 C882,608 882,628 900,618Z" fill="#d8ecf8" stroke="#3a6a9a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="918" y="640" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#1a3060">Policy</text>
+  <text x="918" y="652" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#1a3060">Architect</text>
+</g>
+
+<!-- ══════════════════════════════════════
+     CLUSTER 4 — CREATIVE & MEDIA
+     Lower right
+════════════════════════════════════════ -->
+<text x="840" y="730" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#9a8880" letter-spacing="0.07em">CREATIVE &amp; MEDIA</text>
+
+<!-- Documentary Filmmaker -->
+<g class="nl" data-node="documentary">
+  <path d="M770,755 C796,736 830,746 832,772 C834,796 810,814 782,810 C754,806 736,786 744,762 C750,744 752,764 770,755Z" fill="#f8dcd8" stroke="#b04a3a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="786" y="778" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#6a1a10">Documentary</text>
+  <text x="786" y="790" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#6a1a10">Filmmaker</text>
+</g>
+
+<!-- Podcast / Radio -->
+<g class="nl" data-node="podcast">
+  <path d="M840,810 C866,792 900,802 902,828 C904,852 880,870 852,866 C824,862 806,842 814,818 C820,800 822,820 840,810Z" fill="#f8dcd8" stroke="#b04a3a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="856" y="832" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#6a1a10">Podcast /</text>
+  <text x="856" y="844" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#6a1a10">Radio Host</text>
+</g>
+
+<!-- Illustrator / Graphic Novelist -->
+<g class="nl" data-node="illustration">
+  <path d="M740,840 C764,822 796,832 796,858 C796,882 772,898 746,892 C720,886 704,866 714,844 C720,828 724,848 740,840Z" fill="#f8dcd8" stroke="#b04a3a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="750" y="858" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#6a1a10">Illustrator /</text>
+  <text x="750" y="870" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#6a1a10">Graphic Novelist</text>
+</g>
+
+<!-- ══════════════════════════════════════
+     CLUSTER 5 — SPIRITUAL & RITUAL
+     Bottom centre
+════════════════════════════════════════ -->
+<text x="580" y="805" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#9a8880" letter-spacing="0.07em">CONTEMPLATIVE &amp; RITUAL PRACTICE</text>
+
+<!-- Chaplain / Spiritual Care -->
+<g class="nl" data-node="chaplain">
+  <path d="M506,840 C530,822 562,832 562,858 C562,882 538,898 512,892 C486,886 470,866 480,844 C488,828 492,848 506,840Z" fill="#f4d8e8" stroke="#9a3a6a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="516" y="857" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#5a1038">Chaplain /</text>
+  <text x="516" y="869" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#5a1038">Spiritual Care</text>
+</g>
+
+<!-- Death Doula -->
+<g class="nl" data-node="deathdoula">
+  <path d="M576,855 C600,837 632,847 632,873 C632,897 608,913 582,907 C556,901 540,881 550,859 C558,843 562,863 576,855Z" fill="#f4d8e8" stroke="#9a3a6a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="586" y="873" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#5a1038">Death</text>
+  <text x="586" y="885" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#5a1038">Doula</text>
+</g>
+
+<!-- Meditation / Mindfulness Teacher -->
+<g class="nl" data-node="meditation">
+  <path d="M646,840 C670,822 702,832 702,858 C702,882 678,898 652,892 C626,886 610,866 620,844 C628,828 632,848 646,840Z" fill="#f4d8e8" stroke="#9a3a6a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="660" y="857" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#5a1038">Mindfulness /</text>
+  <text x="660" y="869" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#5a1038">Meditation Teacher</text>
+</g>
+
+<!-- ══════════════════════════════════════
+     CLUSTER 6 — SCIENCE & RESEARCH
+     Lower left
+════════════════════════════════════════ -->
+<text x="355" y="805" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#9a8880" letter-spacing="0.07em">SCIENCE &amp; INDEPENDENT RESEARCH</text>
+
+<!-- Citizen Science Lead -->
+<g class="nl" data-node="citizensci">
+  <path d="M264,838 C288,820 320,830 320,856 C320,880 296,896 270,890 C244,884 228,864 238,842 C246,826 250,846 264,838Z" fill="#f0f0d0" stroke="#7a7a2a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="276" y="855" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#3a3a08">Citizen</text>
+  <text x="276" y="867" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#3a3a08">Science Lead</text>
+</g>
+
+<!-- Science Writer -->
+<g class="nl" data-node="sciencewriter">
+  <path d="M336,858 C360,840 392,850 392,876 C392,900 368,916 342,910 C316,904 300,884 310,862 C318,846 322,866 336,858Z" fill="#f0f0d0" stroke="#7a7a2a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="348" y="875" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#3a3a08">Science</text>
+  <text x="348" y="887" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#3a3a08">Writer</text>
+</g>
+
+<!-- Independent Scholar -->
+<g class="nl" data-node="indscholar">
+  <path d="M404,840 C428,822 460,832 460,858 C460,882 436,898 410,892 C384,886 368,866 378,844 C386,828 390,848 404,840Z" fill="#f0f0d0" stroke="#7a7a2a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="416" y="857" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#3a3a08">Independent</text>
+  <text x="416" y="869" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#3a3a08">Scholar</text>
+</g>
+
+<!-- ══════════════════════════════════════
+     CLUSTER 7 — SOCIAL ENTERPRISE & ACTIVISM
+     Left
+════════════════════════════════════════ -->
+<text x="245" y="420" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#9a8880" letter-spacing="0.07em">SOCIAL ENTERPRISE &amp; ACTIVISM</text>
+
+<!-- Cooperative Founder -->
+<g class="nl" data-node="cooperative">
+  <path d="M164,448 C190,430 224,440 226,466 C228,492 204,510 176,506 C148,502 130,482 138,458 C144,440 148,460 164,448Z" fill="#d0f0f0" stroke="#2a7a7a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="178" y="470" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#0a3a3a">Cooperative</text>
+  <text x="178" y="482" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#0a3a3a">Founder</text>
+</g>
+
+<!-- Labour Organiser -->
+<g class="nl" data-node="labour">
+  <path d="M152,535 C178,517 212,527 214,553 C216,579 192,597 164,593 C136,589 118,569 126,545 C132,527 136,547 152,535Z" fill="#d0f0f0" stroke="#2a7a7a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="166" y="557" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#0a3a3a">Labour</text>
+  <text x="166" y="569" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#0a3a3a">Organiser</text>
+</g>
+
+<!-- Community Land Trust -->
+<g class="nl" data-node="landtrust">
+  <path d="M164,625 C190,607 224,617 226,643 C228,669 204,687 176,683 C148,679 130,659 138,635 C144,617 148,637 164,625Z" fill="#d0f0f0" stroke="#2a7a7a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="178" y="645" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#0a3a3a">Community</text>
+  <text x="178" y="657" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#0a3a3a">Land Trust</text>
+</g>
+
+<!-- ══════════════════════════════════════
+     CLUSTER 8 — BUILT ENVIRONMENT & DESIGN
+     Upper left
+════════════════════════════════════════ -->
+<text x="340" y="200" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#9a8880" letter-spacing="0.07em">BUILT ENVIRONMENT &amp; DESIGN</text>
+
+<!-- Universal Design Architect -->
+<g class="nl" data-node="architect">
+  <path d="M238,240 C262,220 298,230 300,258 C302,284 276,302 248,296 C220,290 202,268 212,244 C220,226 224,250 238,240Z" fill="#e8e0f8" stroke="#5a4a9a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="252" y="262" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#2a1a58">Universal Design</text>
+  <text x="252" y="274" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#2a1a58">Architect</text>
+</g>
+
+<!-- Therapeutic Space Designer -->
+<g class="nl" data-node="spacedesign">
+  <path d="M318,285 C344,267 378,277 380,305 C382,331 356,348 328,342 C300,336 282,314 292,290 C300,272 304,296 318,285Z" fill="#e8e0f8" stroke="#5a4a9a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="332" y="308" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#2a1a58">Therapeutic</text>
+  <text x="332" y="320" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#2a1a58">Space Designer</text>
+</g>
+
+<!-- Sensory Environment Consultant -->
+<g class="nl" data-node="sensory">
+  <path d="M378,340 C404,322 438,332 440,360 C442,386 416,402 388,396 C360,390 342,368 352,344 C360,326 364,350 378,340Z" fill="#e8e0f8" stroke="#5a4a9a" stroke-width="1" filter="url(#sf)" class="nb"/>
+  <text x="392" y="362" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#2a1a58">Sensory Environ.</text>
+  <text x="392" y="374" text-anchor="middle" font-family="Asap,sans-serif" font-size="9" fill="#2a1a58">Consultant</text>
+</g>
+
+<!-- ══════════════════════════════════════
+     LEGEND
+════════════════════════════════════════ -->
+<rect x="30" y="950" width="1140" height="1" fill="#e8e0d4"/>
+<text x="30" y="972" font-family="Asap,sans-serif" font-size="8.5" fill="#aaa098" letter-spacing="0.06em">CLUSTER KEY</text>
+
+<rect x="30" y="984" width="12" height="12" rx="6" fill="#f4d8e8" stroke="#9a3a6a" stroke-width="0.8"/>
+<text x="48" y="994" font-family="Asap,sans-serif" font-size="9" fill="#5a4050">Healing arts &amp; somatic · Contemplative &amp; ritual</text>
+
+<rect x="250" y="984" width="12" height="12" rx="6" fill="#d8f0e4" stroke="#3a7a58" stroke-width="0.8"/>
+<text x="268" y="994" font-family="Asap,sans-serif" font-size="9" fill="#304a38">Nature &amp; ecology</text>
+
+<rect x="420" y="984" width="12" height="12" rx="6" fill="#d8ecf8" stroke="#3a6a9a" stroke-width="0.8"/>
+<text x="438" y="994" font-family="Asap,sans-serif" font-size="9" fill="#203050">Law &amp; human rights advocacy</text>
+
+<rect x="620" y="984" width="12" height="12" rx="6" fill="#f8dcd8" stroke="#b04a3a" stroke-width="0.8"/>
+<text x="638" y="994" font-family="Asap,sans-serif" font-size="9" fill="#4a1a10">Creative &amp; media</text>
+
+<rect x="780" y="984" width="12" height="12" rx="6" fill="#f0f0d0" stroke="#7a7a2a" stroke-width="0.8"/>
+<text x="798" y="994" font-family="Asap,sans-serif" font-size="9" fill="#3a3a10">Science &amp; independent research</text>
+
+<rect x="990" y="984" width="12" height="12" rx="6" fill="#d0f0f0" stroke="#2a7a7a" stroke-width="0.8"/>
+<text x="1008" y="994" font-family="Asap,sans-serif" font-size="9" fill="#0a3030">Social enterprise &amp; activism</text>
+
+<rect x="30" y="1010" width="12" height="12" rx="6" fill="#e8e0f8" stroke="#5a4a9a" stroke-width="0.8"/>
+<text x="48" y="1020" font-family="Asap,sans-serif" font-size="9" fill="#2a1a48">Built environment &amp; design</text>
+
+</svg>
+</div>
+
+<div id="tooltip">
+  <div class="tt-cat" id="tt-cat"></div>
+  <div class="tt-title" id="tt-title"></div>
+  <div class="tt-body" id="tt-body"></div>
+</div>
+
+<div id="sidebar">
+  <button id="sbc" onclick="closeSB()">✕</button>
+  <div class="sb-cat" id="sb-cat"></div>
+  <div class="sb-title" id="sb-title"></div>
+  <div class="sb-desc" id="sb-desc"></div>
+  <div class="sb-lbl">Why this connects to existing strengths</div>
+  <ul class="sb-list" id="sb-list"></ul>
+  <div class="sb-lbl">What it would take</div>
+  <div id="sb-note"></div>
+  <div id="sb-stretch-wrap" style="margin-top:10px"></div>
+</div>
+
+<footer>Alternate path map · All clusters centre on impact, meaning, and the full use of existing strengths · Click any leaf to think it through</footer>
+
+<script>
+const nodes = {
+  somatic:{cat:'Healing arts & somatic',color:'#9a3a6a',
+    title:'Somatic Practitioner',
+    desc:'Somatic practice works with the body as the site of healing — nervous system regulation, trauma stored in the body, movement and sensation as pathways to wellbeing. The existing care work, trauma-informed orientation, and studio practice all feed directly into this.',
+    why:['Care work across end-of-life, dementia, and disability — embodied presence is already practiced','Studio practice as a body-based creative modality','Trauma-informed facilitation already developed','Empathy and Individualization strengths — attuned to each person uniquely','Restorative strength drawn to healing and repair'],
+    takes:'Training in somatic modalities — Somatic Experiencing (SE), Hakomi, or body-based trauma approaches. 2-3 years of training alongside existing work. Can be done without a full degree.',
+    stretch:'moderate'},
+
+  movement:{cat:'Healing arts & somatic',color:'#9a3a6a',
+    title:'Dance / Movement Therapist',
+    desc:'Movement therapy uses the body and creative expression as the primary therapeutic medium. It sits at the exact intersection of studio practice, care work, and therapeutic intention that has been developing for years.',
+    why:['Studio practice and BFA foundation — embodied creative knowledge','Arts-based learning has been the thread across the whole career','Care work with people in vulnerable states — physical and emotional presence','Therapeutic Studio practice already pointing in this direction'],
+    takes:'Masters in Dance/Movement Therapy (e.g. Concordia, Naropa) or expressive arts therapy. 2 years. Supervised clinical hours required.',
+    stretch:'moderate'},
+
+  expressive:{cat:'Healing arts & somatic',color:'#9a3a6a',
+    title:'Expressive Arts Facilitator',
+    desc:'Expressive arts therapy (ExAT) integrates visual art, movement, music, writing, and drama as therapeutic modalities — exactly the multimodal approach that has been implicit across the career. It is perhaps the most direct translation of existing practice into a formal therapeutic role.',
+    why:['Multimodal creative practice across the entire career','ArtStarts, ECU, Therapeutic Studio — arts as healing is already the frame','No single discipline required — the integration of modalities is the point','Learning design skills mean structured facilitation is already natural'],
+    takes:'Certificate or Masters in Expressive Arts Therapy (IEATA-registered programs). European Graduate School offers a respected program. Can be done alongside other work.',
+    stretch:'low'},
+
+  ecotherapy:{cat:'Nature & ecology',color:'#3a7a58',
+    title:'Ecotherapist / Forest Therapy Guide',
+    desc:'Ecotherapy draws on the healing relationship between people and natural environments — forest bathing, nature-based counselling, wilderness therapy. The existing nature practice (Butterfly Way Ranger, West End Plant Clinic) suggests this is already a lived value, not just a career option.',
+    why:['Nature practice explicitly named as a life priority','Butterfly Way Ranger volunteer — already in this world','Somatic and embodied presence skills from care and studio work','Restorative strength — drawn to environments of renewal','Facilitation skills transfer directly to group nature-based work'],
+    takes:'Certified Nature and Forest Therapy guide training (ANFT) — a relatively short certification. Combine with counselling credential for deeper clinical work. Low barrier to entry.',
+    stretch:'low'},
+
+  conservation:{cat:'Nature & ecology',color:'#3a7a58',
+    title:'Conservation Educator',
+    desc:'Working with conservation organisations, parks, or environmental NGOs to design and deliver education programs that connect communities — especially children and marginalised groups — to ecological knowledge and stewardship.',
+    why:['STEAM education background is directly relevant','Accessible learning design expertise — conservation ed needs this','Grant development skills for environmental funding','Futuristic strength — long-term thinking about ecological systems'],
+    takes:'Volunteer or part-time entry through existing conservation connections. Formal programs in environmental education or conservation biology optional. The existing learning design credential is already more than sufficient.',
+    stretch:'low'},
+
+  permaculture:{cat:'Nature & ecology',color:'#3a7a58',
+    title:'Permaculture / Food Systems Educator',
+    desc:'Designing and teaching sustainable food systems, urban growing, and regenerative land practice. Connects deeply to community wellbeing, accessibility, and the long-term thinking that runs through the whole career.',
+    why:['Nature practice and pollinator work already a lived commitment','Systems thinking — Permaculture is fundamentally a design discipline','Community-building skills from ArtStarts and UBC WIL work','Futuristic strength — regenerative systems are inherently long-term'],
+    takes:'Permaculture Design Certificate (PDC) — 72-hour course, widely available. Pair with existing facilitation skills. Entry point is very accessible.',
+    stretch:'moderate'},
+
+  law:{cat:'Law & advocacy',color:'#3a6a9a',
+    title:'Disability Rights Lawyer (JD)',
+    desc:'A JD specialising in disability rights, human rights, or health law would add legal teeth to the existing advocacy and policy work. It is a significant investment of time — but it produces a credential that is generative for decades and opens doors to systemic change that advisory work alone cannot.',
+    why:['28 years with Amnesty International — human rights is a deep value','Disability Studies MSc (if pursued) would complement law school directly','Analytical and Strategic strengths — legal reasoning is a natural fit','Restorative strength — drawn to fixing broken systems','Policy and grant work shows comfort with institutional and regulatory frameworks'],
+    takes:'JD program (3 years full-time). In Canada: UBC, UVic, Osgoode. Disability law clinics as articling placement. A long path — but one that produces a rare combination: lawyer with deep disability practice and clinical background.',
+    stretch:'high — but transformative'},
+
+  humanrights:{cat:'Law & advocacy',color:'#3a6a9a',
+    title:'Human Rights Advocate',
+    desc:'Working with human rights organisations, tribunals, or commissions — either in direct advocacy, complaint support, or systemic policy work. The Amnesty International background, disability expertise, and facilitation skills are directly applicable.',
+    why:['28 years as Amnesty International letter writer — this is already a lived commitment','YWCA Young Woman of Distinction nominee — values recognition','DEI leadership and culture change across multiple organisations','Disability and accessibility expertise adds a specific policy lens'],
+    takes:'Entry through NGOs or human rights commissions without additional credentials. A law degree or graduate degree in human rights would deepen the work. Volunteer with disability rights organisations first.',
+    stretch:'low to moderate'},
+
+  policyarch:{cat:'Law & advocacy',color:'#3a6a9a',
+    title:'Policy Architect',
+    desc:'Designing the frameworks that govern how institutions, governments, or systems operate — accessibility policy, health policy, education policy. Moving from implementing policy to authoring it.',
+    why:['Grant development and program evaluation — understanding policy funding cycles','Disability Studies MSc would add theoretical and political grounding','Strategic strength — seeing patterns across complex systems','Futuristic strength — designing for futures not yet visible','Cross-sector fluency across health, education, arts, and government'],
+    takes:'Graduate degree in Public Policy (MPP) or Law as a pathway. Entry through government advisory roles or think tanks. Policy fellowship programs (eg. Trudeau Foundation, McConnell Foundation) are worth investigating.',
+    stretch:'moderate'},
+
+  documentary:{cat:'Creative & media',color:'#b04a3a',
+    title:'Documentary Filmmaker',
+    desc:'Using film to tell stories about disability, end-of-life care, accessibility, and social justice. Documentary sits at the intersection of research, storytelling, advocacy, and art — all threads that run through the career. A natural medium for someone who thinks visually and cares deeply about systems.',
+    why:['BFA and visual arts practice — visual storytelling is foundational','Storytelling for systems change is an explicit existing strength','Amnesty International advocacy — documentary as witness and action','Input and Learner strengths — research-heavy storytelling suits both','Care work gives access to stories that most filmmakers never encounter'],
+    takes:'Documentary filmmaking can be learned through short courses, mentorship, and practice rather than a full degree. Vancouver has a strong documentary community. NFB connections worth exploring. A significant creative pivot — and a genuinely exciting one.',
+    stretch:'moderate to high'},
+
+  podcast:{cat:'Creative & media',color:'#b04a3a',
+    title:'Podcast / Radio Host',
+    desc:'A podcast or radio program exploring disability, learning, mental health, death literacy, accessibility, or the intersections of art and healing. The Intellection and Communication strengths are built for long-form conversation. This is also a platform that amplifies the rest of the work.',
+    why:['Intellection #1 — deep thinking expressed through conversation','Learner and Input strengths — always gathering material worth sharing','Facilitation skills translate directly to interview and dialogue formats','The breadth of the career means the range of conversations is genuinely wide'],
+    takes:'Low barrier to entry — a decent microphone and a clear focus. Can be built alongside any other work as a platform rather than a primary career. Worth starting small and seeing where it leads.',
+    stretch:'low'},
+
+  illustration:{cat:'Creative & media',color:'#b04a3a',
+    title:'Illustrator / Graphic Novelist',
+    desc:'Using illustration and sequential art to communicate complex ideas — disability justice, mental health, neuroscience, end-of-life care — in accessible and emotionally resonant ways. A graphic novel about any of these subjects would be both art and advocacy.',
+    why:['BFA and 24-year studio practice — visual art is already the foundation','Accessible visual learning design — making complex ideas visible is a core skill','Input and Learner strengths — deep research feeds rich illustration','Storytelling for systems change pairs naturally with visual narrative'],
+    takes:'No additional formal training required — the existing visual practice is the foundation. Time and a focused project. Graphic medicine (illness and care narratives in comics) is a growing and respected field.',
+    stretch:'low — already have the tools'},
+
+  chaplain:{cat:'Contemplative & ritual practice',color:'#9a3a6a',
+    title:'Chaplain / Spiritual Care Practitioner',
+    desc:'Providing non-denominational spiritual care in hospitals, hospices, prisons, or community settings — holding space for people at life thresholds, in grief, in crisis. The end-of-life care work has already been living this role without the formal title.',
+    why:['End-of-life care in France and Canada — this is already practiced','Alzheimer Society facilitation — accompanying families through threshold experiences','Empathy and Relator strengths — deep presence with individual people','Belief strength (18th) — core values that provide direction and purpose','Non-clinical care that is entirely values-aligned'],
+    takes:'Clinical Pastoral Education (CPE) — a supervised residency program available at most major hospitals. Typically 4 units of CPE for professional chaplaincy. More accessible than most clinical credentials.',
+    stretch:'low'},
+
+  deathdoula:{cat:'Contemplative & ritual practice',color:'#9a3a6a',
+    title:'Death Doula',
+    desc:'Supporting people and families through the dying process — practically, emotionally, and spiritually. Not a medical role but a deeply human one. The end-of-life care experience, therapeutic arts training, and care presence all converge here in a way that few people can offer.',
+    why:['End-of-life care in Lourdes, France — this has already been done','Alzheimer Society facilitation — accompanying families is already the practice','Non-clinical but deeply meaningful — the impact is immediate and real','Death literacy is an emerging public need that matches the values','Therapeutic arts and mindfulness can be offered as complementary support'],
+    takes:'Death doula certification programs (e.g. INELDA, Douglas College offers training). Relatively short pathway. Can be practiced privately or through hospices alongside other work. A growing field.',
+    stretch:'very low — already doing this informally'},
+
+  meditation:{cat:'Contemplative & ritual practice',color:'#9a3a6a',
+    title:'Mindfulness / Meditation Teacher',
+    desc:'Teaching mindfulness, meditation, or contemplative practice — in healthcare, schools, workplaces, or community settings. Particularly powerful when oriented toward disability-affirming, trauma-sensitive approaches that do not treat mindfulness as a cure-all.',
+    why:['Nature practice and ritual already named as important in the development mind map','Facilitation skills transfer directly','Trauma-informed orientation means the teaching would be sensitive and grounded','Accessible learning design — creating inclusive contemplative spaces'],
+    takes:'MBSR (Mindfulness-Based Stress Reduction) teacher training, or other evidence-based programs. Several reputable options online. Can be integrated into existing work rather than replacing it.',
+    stretch:'low to moderate'},
+
+  citizensci:{cat:'Science & independent research',color:'#7a7a2a',
+    title:'Citizen Science Lead',
+    desc:'Designing and running community-based research projects — environmental monitoring, health data, pollinator tracking — that engage the public in real scientific inquiry. Connects the neuroscience background, the learning design expertise, and the nature practice.',
+    why:['BSc Neuroscience — scientific grounding for research design','Butterfly Way Ranger — already doing citizen science in practice','ArtStarts STEAM work — making science accessible to communities','Learner and Input strengths — gathering and synthesising data is energising'],
+    takes:'No formal credential required beyond existing BSc and research experience. Connection with organisations like Let\'s Talk Science, NSERC PromoScience, or environmental monitoring groups.',
+    stretch:'low'},
+
+  sciencewriter:{cat:'Science & independent research',color:'#7a7a2a',
+    title:'Science Writer',
+    desc:'Writing about neuroscience, disability, public health, or ecology for general audiences — in magazines, books, journalism, or online platforms. The Intellection, Input, and Learner strengths are all built for this. It is also deeply portable — it can be done anywhere, independently.',
+    why:['Intellection #1 — deep thinking expressed in writing','Learner #2 and Input #3 — always gathering material worth writing about','BSc Neuroscience gives genuine scientific literacy','Storytelling for systems change is an explicit strength','Reading and writing named as favourite verbs'],
+    takes:'No formal credential required. Build a portfolio — start writing publicly about things already known and cared about. Science journalism courses available (e.g. CASW, Knight Science Journalism). The existing expertise is the credential.',
+    stretch:'low'},
+
+  indscholar:{cat:'Science & independent research',color:'#7a7a2a',
+    title:'Independent Scholar',
+    desc:'Pursuing research, writing, and intellectual contribution outside of a formal institutional affiliation — through think tanks, fellowships, foundations, or self-directed inquiry. The Intellection and Strategic strengths are particularly well-suited to this non-linear path.',
+    why:['Intellection #1 — designated time for deep thinking is already practiced','Learner and Input strengths — self-directed learning is natural','The breadth of the career means the research questions are rich and grounded','Frustration at TRIUMF suggests institutional constraints are a genuine limitation'],
+    takes:'Requires financial sustainability — consulting, writing, or other income alongside research. Fellowship programs (Trudeau, Killam, Banting) as entry points. A long-term build, not an immediate pivot.',
+    stretch:'moderate'},
+
+  cooperative:{cat:'Social enterprise & activism',color:'#2a7a7a',
+    title:'Cooperative Founder',
+    desc:'Founding a worker-owned or community cooperative — an accessible arts space, a learning cooperative, a care collective — structured so that the power dynamics are built differently from the start. A direct response to having experienced institutional harm.',
+    why:['Culture transformation work at ECU and ICBC — organisational structure matters','DEI leadership — cooperative governance is structural equity in practice','Futuristic strength — imagining institutions that do not yet exist','Achiever and Responsibility strengths — committed to making things happen','A direct response to having been harmed by institutions that protect the wrong things'],
+    takes:'Cooperative development training (Co-operatives First, BC Co-op Association). Legal structure support available. A founding team matters as much as credentials. Start small — a study group or pilot before a full cooperative.',
+    stretch:'moderate to high — but deeply meaningful'},
+
+  labour:{cat:'Social enterprise & activism',color:'#2a7a7a',
+    title:'Labour Organiser',
+    desc:'Organising workers — particularly in precarious, arts, or care sectors — to build collective power and improve working conditions. The experience of being bullied and unsupported by leadership is not just a wound — it is also knowledge. That knowledge has political value.',
+    why:['Direct experience of workplace harm and leadership failure — this is now embodied knowledge','DEI and culture change work — understanding how institutions protect power','Amnesty International 28 years — collective action and advocacy is a lived value','Empathy and Individualization — seeing each person\'s situation clearly','Belief strength — core values that do not bend under pressure'],
+    takes:'Entry through unions, labour councils, or worker centres. No specific credential required — experience and commitment are what matters. CUPE, BCGEU, and sector-specific unions are entry points.',
+    stretch:'moderate — emotionally significant given recent experience'},
+
+  landtrust:{cat:'Social enterprise & activism',color:'#2a7a7a',
+    title:'Community Land Trust',
+    desc:'Working with community land trusts to develop permanently affordable housing, accessible community spaces, or community-owned land for arts, care, or ecological purposes. Systems-level change in how communities are built and who they serve.',
+    why:['Futuristic and Strategic strengths — long-term systems thinking','Community-building across ArtStarts, UBC, and volunteer work','Nature and ecology values — land stewardship connects to pollinator work','Cooperative and collective values — who owns the land matters'],
+    takes:'Entry through CLT organisations (eg. Whistler CLT, Vancouver CLT). Policy and community development background from existing career is relevant. Graduate work in community planning optional.',
+    stretch:'moderate'},
+
+  architect:{cat:'Built environment & design',color:'#5a4a9a',
+    title:'Universal Design Architect / Built Environment Consultant',
+    desc:'Working at the intersection of architecture, disability, and human experience — designing spaces that genuinely serve all bodies and minds from the start rather than retrofitting access. The existing accessibility design work has been doing this in learning environments — extending it to built environments is a natural move.',
+    why:['Accessibility design expertise already embedded in physical learning spaces at ECU','Sensory-informed classroom planning already practiced','Individualization — deeply attuned to how different bodies experience space','Disability Studies lens (if pursued) reframes space as political, not just functional'],
+    takes:'A built environment pathway would typically require architecture school (M.Arch) or a graduate certificate in universal design. Alternatively, the existing accessibility expertise positions well for consulting roles without an architecture license — working alongside architects as a specialist.',
+    stretch:'high (if architecture degree) · moderate (if consulting)'},
+
+  spacedesign:{cat:'Built environment & design',color:'#5a4a9a',
+    title:'Therapeutic Space Designer',
+    desc:'Designing physical spaces — healthcare environments, hospices, schools, community centres — that actively support healing, calm, and accessibility. An emerging field that sits between interior design, environmental psychology, and care practice.',
+    why:['Accessible studio space overhaul at ECU — physical design for learning and care','Sensory environment expertise — noise, light, rest, and adaptive tools','Care work in institutional settings — direct knowledge of what those spaces lack','Therapeutic Studio practice — understanding space as a healing container'],
+    takes:'Certificate programs in healthcare design or environmental psychology. EDAC (Evidence-Based Design Accreditation and Certification) as a relevant credential. Lower barrier than a full architecture degree.',
+    stretch:'moderate'},
+
+  sensory:{cat:'Built environment & design',color:'#5a4a9a',
+    title:'Sensory Environment Consultant',
+    desc:'Advising schools, healthcare settings, workplaces, and public spaces on creating sensory-informed environments — lighting, acoustics, texture, wayfinding — that work for neurodivergent people, disabled people, and anyone in sensory overload.',
+    why:['Sensory-informed classroom planning already practiced at ArtStarts and TRIUMF','Accessible signage and wayfinding design at ECU','Neuroscience background adds theoretical grounding for sensory processing','WCAG and Universal Design expertise extends naturally to physical environments','Disability Studies lens frames this as structural and political, not just ergonomic'],
+    takes:'No single credential dominates this emerging space. Build on existing accessibility and neuroscience expertise. Connect with organisations like the Sensory Trust (UK) or Autism-ASPECTSS design guidelines. Portfolio of projects is the credential.',
+    stretch:'low to moderate'},
+};
+
+const tt = document.getElementById('tooltip');
+
+function showTT(e, d) {
+  document.getElementById('tt-cat').textContent = d.cat;
+  document.getElementById('tt-cat').style.color = d.color;
+  document.getElementById('tt-title').textContent = d.title;
+  document.getElementById('tt-body').textContent = d.desc.slice(0,155)+(d.desc.length>155?'…':'');
+  moveTT(e);
+  tt.classList.add('vis');
+}
+function moveTT(e) {
+  const tw=290,th=165;
+  let l=e.clientX+14,t=e.clientY-10;
+  if(l+tw>window.innerWidth)l=e.clientX-tw-14;
+  if(t+th>window.innerHeight)t=e.clientY-th-10;
+  tt.style.left=l+'px';tt.style.top=t+'px';
+}
+function hideTT(){tt.classList.remove('vis');}
+
+function openSB(d) {
+  document.getElementById('sb-cat').textContent = d.cat;
+  document.getElementById('sb-cat').style.color = d.color;
+  document.getElementById('sb-title').textContent = d.title;
+  document.getElementById('sb-desc').textContent = d.desc;
+  const list = document.getElementById('sb-list');
+  list.innerHTML = d.why.map(w=>`<li>${w}</li>`).join('');
+  document.getElementById('sb-note').innerHTML =
+    `<div class="sb-note" style="border-color:${d.color}">${d.takes}</div>`;
+  const sw = document.getElementById('sb-stretch-wrap');
+  const stretchColors = {'low':'#3a7a58','moderate':'#c8822a','high':'#b04a3a','very low':'#2a7a7a'};
+  const stretchKey = Object.keys(stretchColors).find(k=>d.stretch.startsWith(k))||'moderate';
+  sw.innerHTML = `<span class="sb-stretch" style="border-color:${stretchColors[stretchKey]};color:${stretchColors[stretchKey]}">stretch: ${d.stretch}</span>`;
+  document.getElementById('sidebar').classList.add('open');
+}
+
+function closeSB(){document.getElementById('sidebar').classList.remove('open');}
+document.addEventListener('click',closeSB);
+document.getElementById('sidebar').addEventListener('click',e=>e.stopPropagation());
+
+document.querySelectorAll('.nl').forEach(g=>{
+  const key=g.dataset.node;
+  const d=nodes[key];
+  if(!d)return;
+  g.addEventListener('mouseenter',e=>showTT(e,d));
+  g.addEventListener('mousemove',moveTT);
+  g.addEventListener('mouseleave',hideTT);
+  g.addEventListener('click',e=>{e.stopPropagation();openSB(d);});
+});
+</script>
+</body>
+</html>
